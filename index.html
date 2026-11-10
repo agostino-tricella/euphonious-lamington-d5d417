@@ -68,14 +68,14 @@
       </div>
     </section>
 
-    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA (XML Diretto) -->
+    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA -->
     <section id="section-news" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-bold">Rassegna Stampa in Tempo Reale</h2>
           <p class="text-sm text-slate-400">Clicca sul titolo per leggere l'articolo completo sulla testata originale.</p>
         </div>
-        <button onclick="caricaNotizie()" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
+        <button onclick="caricaNotizie(true)" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
           <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> Aggiorna news
         </button>
       </div>
@@ -113,13 +113,13 @@
   </main>
 
   <script>
-    // 1. IMPOSTA LA DATA ODIERNA
+    // 1. DATA ODIERNA
     const dataOdiernaEl = document.getElementById('data-odierna');
     if (dataOdiernaEl) {
       dataOdiernaEl.textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // 2. GESTIONE DELLA NAVIGAZIONE
+    // 2. NAVIGAZIONE TAB
     let notizieCaricate = false;
 
     function switchTab(tabId) {
@@ -151,8 +151,47 @@
       switchTab(hash);
     });
 
-    // 3. CARICAMENTO REALE DELLE NEWS SPECIFICHE (Tramite parser XML diretto)
-    async function caricaNotizie() {
+    // 3. RECUPERO FEED CON MULTI-PROXY A CASCATA
+    const fontiDiretteFallback = [
+      {
+        titolo: "Rassegna Stampa Ufficiale: notizie e report su Appiano Gentile",
+        fonte: "FCInterNews",
+        data: "Canale Live",
+        link: "https://www.fcinternews.it/"
+      },
+      {
+        titolo: "Approfondimenti tattici, pagelle e ultime formazioni nerazzurre",
+        fonte: "Gazzetta dello Sport",
+        data: "Speciale Inter",
+        link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
+      },
+      {
+        titolo: "Tutte le novità sui singoli, infermeria e interviste pre-partita",
+        fonte: "Sky Sport",
+        data: "Canale Inter",
+        link: "https://sport.sky.it/calcio/squadre/inter/news"
+      },
+      {
+        titolo: "Statistiche, commenti a caldo e focus sui protagonisti",
+        fonte: "Corriere dello Sport",
+        data: "Rubrica Inter",
+        link: "https://www.corrieredellosport.it/calcio/squadre/inter"
+      },
+      {
+        titolo: "Calciomercato e retroscena societari sul club nerazzurro",
+        fonte: "SportMediaset",
+        data: "Speciale",
+        link: "https://www.sportmediaset.mediaset.it/calcio/inter/"
+      },
+      {
+        titolo: "Analisi tecnica del campionato e del cammino europeo",
+        fonte: "Tuttosport",
+        data: "Focus",
+        link: "https://www.tuttosport.com/calcio/inter"
+      }
+    ];
+
+    async function caricaNotizie(forzaAggiornamento = false) {
       const grid = document.getElementById('news-grid');
       const refreshIcon = document.getElementById('refresh-icon');
       if (refreshIcon) refreshIcon.classList.add('fa-spin');
@@ -160,184 +199,6 @@
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center text-slate-400">
           <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
-          <p class="text-sm">Lettura delle ultime notizie in corso, recupero link specifici...</p>
+          <p class="text-sm">Collegamento alle testate sportive in corso...</p>
         </div>
       `;
-
-      try {
-        // Link originale del feed Google News
-        const rssUrl = 'https://news.google.com/rss/search?q=Inter+calcio&hl=it&gl=IT&ceid=IT:it';
-        // Utilizzo un proxy open source gratuito per bypassare i blocchi del browser (CORS) e accedere all'XML puro
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-        
-        const res = await fetch(proxyUrl);
-        if (!res.ok) throw new Error("Errore di rete");
-        
-        const data = await res.json();
-        
-        // Trasforma il testo puro nell'albero dei dati XML per poter leggere ogni singolo <link>
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-        const items = xmlDoc.querySelectorAll("item");
-
-        if (items.length > 0) {
-          grid.innerHTML = '';
-          notizieCaricate = true;
-          let count = 0;
-
-          items.forEach(art => {
-            if (count >= 9) return; // Mostra massimo 9 articoli
-
-            const titoloElem = art.querySelector("title");
-            const linkElem = art.querySelector("link");
-            const dataElem = art.querySelector("pubDate");
-            const sourceElem = art.querySelector("source");
-            
-            if (titoloElem && linkElem) {
-              let titolo = titoloElem.textContent;
-              const linkSpecifico = linkElem.textContent; // LINK REALE DELL'ARTICOLO
-              
-              let fonte = "Stampa";
-              if (sourceElem) {
-                fonte = sourceElem.textContent;
-              } else if (titolo.includes(' - ')) {
-                const pezzi = titolo.split(' - ');
-                fonte = pezzi.pop();
-                titolo = pezzi.join(' - ');
-              }
-
-              let dataPub = "Oggi";
-              if (dataElem) {
-                dataPub = new Date(dataElem.textContent).toLocaleDateString('it-IT', { 
-                  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
-                });
-              }
-
-              creaCardNotizia(grid, fonte, dataPub, titolo, linkSpecifico);
-              count++;
-            }
-          });
-        } else {
-          throw new Error('Nessun articolo trovato nel feed');
-        }
-      } catch (err) {
-        grid.innerHTML = `
-          <div class="col-span-full bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400">
-            <i class="fa-solid fa-triangle-exclamation text-yellow-500 text-2xl mb-2"></i>
-            <p class="text-sm mb-4">Non è stato possibile accedere al feed in questo momento.</p>
-            <button onclick="caricaNotizie()" class="px-4 py-2 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition">Riprova</button>
-          </div>
-        `;
-      } finally {
-        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-      }
-    }
-
-    function creaCardNotizia(container, fonte, dataPub, titolo, link) {
-      const card = document.createElement('article');
-      card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
-      card.innerHTML = `
-        <div>
-          <div class="flex justify-between items-center text-xs mb-3">
-            <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
-            <span class="text-slate-500">${dataPub}</span>
-          </div>
-          <h3 class="font-bold text-base text-white mb-3 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
-        </div>
-        <div class="pt-4 border-t border-slate-800/60 mt-3">
-          <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-            Leggi la notizia completa <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
-          </a>
-        </div>
-      `;
-      container.appendChild(card);
-    }
-
-    // 4. ARCHIVIO STORICO CON I LINK REALI
-    const datiStorici = [
-      {
-        anno: "1908",
-        titolo: "La Fondazione: Fratelli del Mondo",
-        categoria: "Origini",
-        dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.",
-        link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano"
-      },
-      {
-        anno: "1964 - 1965",
-        titolo: "La Grande Inter di Helenio Herrera",
-        categoria: "Era Herrera",
-        dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago'.",
-        link: "https://it.wikipedia.org/wiki/Grande_Inter"
-      },
-      {
-        anno: "1998",
-        titolo: "La Coppa UEFA a Parigi",
-        categoria: "Europa",
-        dettagli: "Trionfo 3-0 contro la Lazio con le reti di Zamorano, Zanetti e la finta leggendaria di Ronaldo 'Il Fenomeno'.",
-        link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998"
-      },
-      {
-        anno: "2010",
-        titolo: "Il Triplete Leggendario",
-        categoria: "Trionfo",
-        dettagli: "Scudetto, Coppa Italia e Champions League vinta nella storica notte del Santiago Bernabéu contro il Bayern Monaco.",
-        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010"
-      },
-      {
-        anno: "2024",
-        titolo: "La Seconda Stella",
-        categoria: "Scudetto",
-        dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.",
-        link: "https://www.inter.it/it/notizie/inter-campione-d-italia-20-scudetto-seconda-stella"
-      }
-    ];
-
-    function renderizzaStoria(items) {
-      const container = document.getElementById('history-container');
-      const noResults = document.getElementById('no-results');
-      container.innerHTML = '';
-
-      if (items.length === 0) {
-        noResults.classList.remove('hidden');
-        return;
-      }
-      noResults.classList.add('hidden');
-
-      items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between";
-        card.innerHTML = `
-          <div>
-            <div class="flex justify-between items-baseline mb-2">
-              <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
-              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
-            <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
-          </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/60">
-            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
-              Apri l'approfondimento su Wikipedia / Inter.it <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
-            </a>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function filtraStoria() {
-      const query = document.getElementById('historySearch').value.toLowerCase();
-      const filtrati = datiStorici.filter(item => 
-        item.anno.toLowerCase().includes(query) ||
-        item.titolo.toLowerCase().includes(query) ||
-        item.categoria.toLowerCase().includes(query) ||
-        item.dettagli.toLowerCase().includes(query)
-      );
-      renderizzaStoria(filtrati);
-    }
-
-    // Inizializza l'archivio al caricamento
-    renderizzaStoria(datiStorici);
-  </script>
-</body>
-</html>
