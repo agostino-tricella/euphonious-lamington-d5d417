@@ -23,7 +23,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></h1>
-          <p class="text-xs text-blue-300">100% Libero da pubblicità e banner invadenti</p>
+          <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
       </div>
 
@@ -145,8 +145,11 @@
   </footer>
 
   <script>
-    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1781565219&single=true&output=csv";
-    const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
+    // =========================================================================
+    // I LINK PUBBLICI CSV DEL TUO FOGLIO GOOGLE (Aggiornati e definitivi)
+    // =========================================================================
+    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
+    const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
 
     // Variabile per conservare tutti gli editoriali scaricati
     let listaEditoriali = [];
@@ -261,13 +264,14 @@
               let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
               let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
 
-              // Fallback per ordine colonne se le intestazioni non sono identiche
+              // Se non ci sono intestazioni o non le trova, ripiega sull'ordine delle celle
               if (!titolo && !data) {
                 data = valori[0] || 'Data recente';
                 titolo = valori[1] || 'Editoriale';
                 p1 = valori[2] || '';
                 p2 = valori[3] || '';
               } else if (!data) {
+                // Genera la data di oggi per il primo editoriale se manca
                 data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
               }
 
@@ -284,10 +288,12 @@
             } else {
               loader.innerHTML = "<p class='text-amber-400 text-sm'>Nessun testo trovato nel foglio Editoriale.</p>";
             }
+          } else {
+            loader.innerHTML = "<p class='text-amber-400 text-sm'>Il foglio Editoriale sembra vuoto.</p>";
           }
         },
-        error: function() {
-          document.getElementById('loader-editoriale').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
+        error: function(err) {
+          document.getElementById('loader-editoriale').innerHTML = `<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Errore: ${err.message}</p>`;
         }
       });
 
@@ -342,15 +348,17 @@
             } else {
               loader.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
             }
+          } else {
+            loader.innerHTML = "<p class='text-slate-400 text-sm'>Il foglio News sembra vuoto.</p>";
           }
         },
-        error: function() {
-          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
+        error: function(err) {
+          document.getElementById('loader-news').innerHTML = `<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Errore: ${err.message}</p>`;
         }
       });
     }
 
-    // Archivio Storico Fai-da-te
+    // Archivio Storico
     const datiStorici = [
       { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
       { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
@@ -394,7 +402,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio
+    // Avvio iniziale
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
