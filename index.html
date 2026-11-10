@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Spazio Nerazzurro | News, Editoriale Quotidiano e Storia dell'Inter</title>
+  <title>Spazio Nerazzurro | Ultime Notizie, Editoriale Quotidiano e Storia dell'Inter</title>
 
   <!-- Meta Tag SEO -->
-  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, rassegna stampa in tempo reale, calendario partite e classifica Serie A.">
-  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, editoriale Inter, rassegna stampa Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter">
+  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite e classifica Serie A.">
+  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter">
   <meta name="author" content="Redazione Spazio Nerazzurro">
   <meta name="robots" content="index, follow, max-image-preview:large">
 
@@ -18,7 +18,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Spazio Nerazzurro | 100% Libero da Pubblicità">
-  <meta property="og:description" content="L'aggregatore indipendente fatto da un interista per gli interisti: editoriale quotidiano, rassegna stampa, calendario e trofei.">
+  <meta property="og:description" content="L'aggregatore indipendente fatto da un interista per gli interisti: editoriale quotidiano, ultime notizie, calendario e trofei.">
   <meta property="og:locale" content="it_IT">
   <meta property="og:site_name" content="Spazio Nerazzurro">
 
@@ -55,7 +55,7 @@
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
         </button>
         <button onclick="switchTab('news')" id="tab-news" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-newspaper mr-2"></i>Notizie in tempo reale
+          <i class="fa-solid fa-newspaper mr-2"></i>Ultime Notizie
         </button>
         <button onclick="switchTab('partite')" id="tab-partite" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days mr-2"></i>Partite & Classifica
@@ -119,12 +119,12 @@
       </div>
     </section>
 
-    <!-- SEZIONE 2: RASSEGNA STAMPA -->
+    <!-- SEZIONE 2: ULTIME NOTIZIE -->
     <section id="section-news" class="tab-content hidden">
       <div class="mb-6 flex justify-between items-center">
         <div>
-          <h2 class="text-2xl font-bold">Rassegna Stampa & Notizie</h2>
-          <p class="text-sm text-slate-400">Gli articoli più rilevanti caricati dalla redazione con link originale.</p>
+          <h2 class="text-2xl font-bold">Ultime Notizie</h2>
+          <p class="text-sm text-slate-400">Gli articoli e le notizie più rilevanti selezionati dalla redazione con link originale.</p>
         </div>
       </div>
       
@@ -222,7 +222,7 @@
 
     let listaEditoriali = [];
 
-    // Partite base (subito mostrate a schermo per evitare blocchi)
+    // Partite base di fallback
     let prossimePartite = [
       { competizione: "Serie A", avversario: "Atalanta", luogo: "Gewiss Stadium (Bergamo)", data: "Domenica 22 Nov", orario: "18:00" },
       { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro", data: "Mercoledì 25 Nov", orario: "21:00" },
@@ -264,7 +264,6 @@
       return '';
     }
 
-    // Funzione fetch con timeout di sicurezza a 5 secondi (impedisce blocchi infiniti)
     function fetchSicuro(url) {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), 5000);
@@ -354,7 +353,7 @@
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
 
-        // SE San Siro, Meazza o Casa => INTER a sinistra. Qualsiasi altro stadio o città => INTER a destra
+        // SE San Siro, Meazza o Casa => INTER a sinistra. Qualsiasi altro stadio/città => INTER a destra
         const tLuogo = (p.luogo || '').toLowerCase();
         const isCasa = tLuogo.includes('san siro') || tLuogo.includes('meazza') || tLuogo.startsWith('casa');
 
@@ -485,7 +484,7 @@
           if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Verifica la pubblicazione web.</p>";
         });
 
-      // 2. NEWS
+      // 2. ULTIME NOTIZIE
       fetchSicuro(urlNews)
         .then(csvText => {
           Papa.parse(csvText, {
@@ -612,7 +611,7 @@
           });
       }
 
-      // 4. PARTITE (Aggiornamento da foglio Google se disponibile)
+      // 4. PARTITE (Preserva intatte tutte le lettere dei nomi squadra)
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite)
           .then(csvText => {
@@ -634,9 +633,13 @@
                     let dat = leggiValore(r, 'data', 'giorno') || valori[3] || 'Prossimamente';
                     let orar = leggiValore(r, 'orario', 'ora') || valori[4] || '20:45';
 
-                    // Pulizia accurata: rimuove solo la parola Inter se scritta per esteso, preservando i nomi di squadra
                     if (avv) {
-                      avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\b/gi, '').replace(/[-–]/g, '').trim();
+                      // Rimuove solo la parola intera Inter o VS e simboli iniziali/finali, lasciando integre tutte le lettere dei club
+                      avv = avv.replace(/\binter\b/gi, '')
+                               .replace(/\bvs\.?\b/gi, '')
+                               .replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '')
+                               .trim();
+
                       if (avv.length > 1) {
                         partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                       }
@@ -652,7 +655,6 @@
             });
           })
           .catch(err => {
-            // Se il download ritarda o fallisce, le partite base rimangono visualizzate senza bloccare la pagina
             console.warn("Utilizzo partite base precaricate:", err);
           });
       }
@@ -703,7 +705,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio immediato senza attese
+    // Avvio immediato
     renderPartite();
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
