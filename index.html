@@ -218,18 +218,10 @@
     const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
-    
-    // (Opzionale) Se crei la 4a scheda "Partite" sul foglio Google, incolla qui il relativo link CSV:
-    const urlPartite = "";
+    const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
 
     let listaEditoriali = [];
-
-    // Calendario 2026 predefinito
-    let prossimePartite = [
-      { competizione: "Serie A", avversario: "Milan", luogo: "San Siro (Casa)", data: "Sabato 21 Nov 2026", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" },
-      { competizione: "Champions League", avversario: "Atletico Madrid", luogo: "Metropolitano (Trasferta)", data: "Mercoledì 25 Nov 2026", orario: "21:00", badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-      { competizione: "Serie A", avversario: "Roma", luogo: "Olimpico (Trasferta)", data: "Domenica 29 Nov 2026", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" }
-    ];
+    let prossimePartite = [];
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -337,6 +329,12 @@
       const partiteContainer = document.getElementById('partite-grid');
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
+      
+      if (prossimePartite.length === 0) {
+        partiteContainer.innerHTML = "<p class='text-slate-400 text-sm col-span-full'>Nessuna partita inserita al momento.</p>";
+        return;
+      }
+
       prossimePartite.forEach(p => {
         const isUcl = p.competizione.toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
@@ -539,7 +537,7 @@
           if (loaderNews) loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
         });
 
-      // 3. CLASSIFICA (Dinamica da Wikipedia via Google Sheets)
+      // 3. CLASSIFICA
       if (urlClassifica && urlClassifica.startsWith('http')) {
         const urlClassificaAntiCache = urlClassifica + (urlClassifica.includes('?') ? '&' : '?') + '_t=' + Date.now();
         fetch(urlClassificaAntiCache)
@@ -614,7 +612,7 @@
           });
       }
 
-      // 4. PARTITE DA GOOGLE SHEETS (Se configurato urlPartite)
+      // 4. PARTITE
       if (urlPartite && urlPartite.startsWith('http')) {
         const urlPartiteAntiCache = urlPartite + (urlPartite.includes('?') ? '&' : '?') + '_t=' + Date.now();
         fetch(urlPartiteAntiCache)
@@ -644,7 +642,7 @@
               }
             });
           })
-          .catch(err => console.log("Uso calendario predefinito:", err));
+          .catch(err => console.error("Errore download partite:", err));
       }
     }
 
@@ -693,8 +691,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Inizializzazione automatica
-    renderPartite();
+    // Inizializzazione
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
