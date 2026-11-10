@@ -7,7 +7,7 @@
   <title>Spazio Nerazzurro | News, Editoriale Quotidiano e Storia dell'Inter</title>
 
   <!-- Meta Tag SEO -->
-  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, rassegna stampa in tempo reale, calendario partite e archivio storico.">
+  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, rassegna stampa in tempo reale, calendario partite e classifica Serie A.">
   <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, editoriale Inter, rassegna stampa Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter">
   <meta name="author" content="Redazione Spazio Nerazzurro">
   <meta name="robots" content="index, follow, max-image-preview:large">
@@ -72,7 +72,6 @@
 
     <!-- SEZIONE 1: EDITORIALE & ARCHIVIO EDITORIALI -->
     <section id="section-editoriale" class="tab-content">
-      
       <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
         <span class="flex items-center gap-2">
           <i class="fa-solid fa-clock-rotate-left text-yellow-400"></i>
@@ -118,7 +117,6 @@
         <p class="text-sm text-slate-400 mb-6">Recupera i punti di vista e le analisi pubblicate nei giorni scorsi.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="archivio-editoriali-grid"></div>
       </div>
-
     </section>
 
     <!-- SEZIONE 2: RASSEGNA STAMPA -->
@@ -152,7 +150,7 @@
         <div class="mb-4 flex items-center justify-between">
           <div>
             <h2 class="text-2xl font-bold text-white">Classifica Serie A</h2>
-            <p class="text-sm text-slate-400">Quadro generale del campionato.</p>
+            <p class="text-sm text-slate-400">Aggiornata in tempo reale.</p>
           </div>
           <div class="flex items-center gap-3 text-xs text-slate-400">
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> Champions</span>
@@ -161,8 +159,13 @@
         </div>
 
         <div class="bg-inter-card border border-blue-900/40 rounded-xl overflow-hidden shadow">
+          <div id="loader-classifica" class="py-8 text-center text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-xl text-yellow-500 mb-2"></i>
+            <p class="text-xs">Caricamento classifica in corso...</p>
+          </div>
+
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
+            <table class="w-full text-left text-sm text-slate-300 hidden" id="classifica-tabella">
               <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-blue-900/40">
                 <tr>
                   <th scope="col" class="py-3 px-4 w-12 text-center">#</th>
@@ -209,9 +212,12 @@
   </footer>
 
   <script>
-    // Link CSV Fogli Google
+    // =========================================================================
+    // I LINK CSV DEI TUOI FOGLI GOOGLE
+    // =========================================================================
     const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
+    const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
 
     let listaEditoriali = [];
 
@@ -219,19 +225,6 @@
       { competizione: "Serie A", avversario: "Lazio", luogo: "San Siro (Casa)", data: "Domenica 23 Nov", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" },
       { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro (Casa)", data: "Mercoledì 26 Nov", orario: "21:00", badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
       { competizione: "Serie A", avversario: "Fiorentina", luogo: "Artemio Franchi (Trasferta)", data: "Domenica 30 Nov", orario: "18:00", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" }
-    ];
-
-    const classificaSerieA = [
-      { pos: 1, squadra: "Inter", pt: 28, g: 12, v: 9, n: 1, p: 2, dr: "+18" },
-      { pos: 2, squadra: "Napoli", pt: 26, g: 12, v: 8, n: 2, p: 2, dr: "+12" },
-      { pos: 3, squadra: "Atalanta", pt: 25, g: 12, v: 8, n: 1, p: 3, dr: "+15" },
-      { pos: 4, squadra: "Juventus", pt: 24, g: 12, v: 6, n: 6, p: 0, dr: "+14" },
-      { pos: 5, squadra: "Lazio", pt: 23, g: 12, v: 7, n: 2, p: 3, dr: "+10" },
-      { pos: 6, squadra: "Fiorentina", pt: 22, g: 12, v: 6, n: 4, p: 2, dr: "+9" },
-      { pos: 7, squadra: "Milan", pt: 21, g: 12, v: 6, n: 3, p: 3, dr: "+6" },
-      { pos: 8, squadra: "Bologna", pt: 18, g: 12, v: 4, n: 6, p: 2, dr: "+2" },
-      { pos: 9, squadra: "Roma", pt: 16, g: 12, v: 4, n: 4, p: 4, dr: "0" },
-      { pos: 10, squadra: "Torino", pt: 15, g: 12, v: 4, n: 3, p: 5, dr: "-2" }
     ];
 
     function switchTab(tabId) {
@@ -336,79 +329,86 @@
       }
     }
 
-    // Rendering Partite e Classifica
-    function renderPartiteEClassifica() {
+    function renderPartite() {
       const partiteContainer = document.getElementById('partite-grid');
-      if (partiteContainer) {
-        partiteContainer.innerHTML = '';
-        prossimePartite.forEach(p => {
-          const card = document.createElement('div');
-          card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden";
-          card.innerHTML = `
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs border px-2 py-0.5 rounded font-semibold ${p.badge}">${p.competizione}</span>
-              <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${p.orario}</span>
-            </div>
-            <div class="flex items-center justify-between my-4">
-              <span class="font-bold text-white text-lg">INTER</span>
-              <span class="text-xs text-yellow-500 font-bold bg-yellow-500/10 border border-yellow-500/30 px-2 py-1 rounded">VS</span>
-              <span class="font-bold text-slate-200 text-lg">${p.avversario}</span>
-            </div>
-            <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
-              <span><i class="fa-regular fa-calendar mr-1"></i>${p.data}</span>
-              <span><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${p.luogo}</span>
-            </div>
-          `;
-          partiteContainer.appendChild(card);
-        });
-      }
-
-      const classificaBody = document.getElementById('classifica-body');
-      if (classificaBody) {
-        classificaBody.innerHTML = '';
-        classificaSerieA.forEach(r => {
-          const isInter = r.squadra === "Inter";
-          const rowClass = isInter 
-            ? "bg-blue-950/60 font-bold text-white border-l-4 border-yellow-500" 
-            : "hover:bg-slate-900/50 transition";
-
-          let indicator = `<span class="text-slate-500 text-xs">${r.pos}</span>`;
-          if (r.pos <= 4) indicator = `<span class="text-blue-400 font-bold text-xs">${r.pos}</span>`;
-          else if (r.pos === 5) indicator = `<span class="text-amber-400 font-bold text-xs">${r.pos}</span>`;
-
-          const tr = document.createElement('tr');
-          tr.className = rowClass;
-          tr.innerHTML = `
-            <td class="py-3 px-4 text-center">${indicator}</td>
-            <td class="py-3 px-4 flex items-center gap-2">
-              ${isInter ? '<span class="w-2 h-2 rounded-full bg-yellow-400"></span>' : ''}
-              <span class="${isInter ? 'text-yellow-400 font-extrabold' : 'text-slate-200'}">${r.squadra}</span>
-            </td>
-            <td class="py-3 px-3 text-center text-yellow-400 font-extrabold">${r.pt}</td>
-            <td class="py-3 px-3 text-center text-slate-400">${r.g}</td>
-            <td class="py-3 px-3 text-center text-slate-400">${r.v}</td>
-            <td class="py-3 px-3 text-center text-slate-400">${r.n}</td>
-            <td class="py-3 px-3 text-center text-slate-400">${r.p}</td>
-            <td class="py-3 px-3 text-center text-slate-400">${r.dr}</td>
-          `;
-          classificaBody.appendChild(tr);
-        });
-      }
+      if (!partiteContainer) return;
+      partiteContainer.innerHTML = '';
+      prossimePartite.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden";
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs border px-2 py-0.5 rounded font-semibold ${p.badge}">${p.competizione}</span>
+            <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${p.orario}</span>
+          </div>
+          <div class="flex items-center justify-between my-4">
+            <span class="font-bold text-white text-lg">INTER</span>
+            <span class="text-xs text-yellow-500 font-bold bg-yellow-500/10 border border-yellow-500/30 px-2 py-1 rounded">VS</span>
+            <span class="font-bold text-slate-200 text-lg">${p.avversario}</span>
+          </div>
+          <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+            <span><i class="fa-regular fa-calendar mr-1"></i>${p.data}</span>
+            <span><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${p.luogo}</span>
+          </div>
+        `;
+        partiteContainer.appendChild(card);
+      });
     }
 
-    // Caricamento Dati Google Sheets con Fetch e gestione errori
+    function renderTabellaClassifica(dati) {
+      const classificaBody = document.getElementById('classifica-body');
+      const loader = document.getElementById('loader-classifica');
+      const tabella = document.getElementById('classifica-tabella');
+
+      if (!classificaBody) return;
+      classificaBody.innerHTML = '';
+
+      dati.forEach(r => {
+        const isInter = r.squadra.toLowerCase().includes('inter');
+        const posNum = parseInt(r.pos) || 0;
+
+        const rowClass = isInter 
+          ? "bg-blue-950/60 font-bold text-white border-l-4 border-yellow-500" 
+          : "hover:bg-slate-900/50 transition";
+
+        let indicator = `<span class="text-slate-500 text-xs">${r.pos}</span>`;
+        if (posNum > 0 && posNum <= 4) indicator = `<span class="text-blue-400 font-bold text-xs">${r.pos}</span>`;
+        else if (posNum === 5) indicator = `<span class="text-amber-400 font-bold text-xs">${r.pos}</span>`;
+
+        const tr = document.createElement('tr');
+        tr.className = rowClass;
+        tr.innerHTML = `
+          <td class="py-3 px-4 text-center">${indicator}</td>
+          <td class="py-3 px-4 flex items-center gap-2">
+            ${isInter ? '<span class="w-2 h-2 rounded-full bg-yellow-400"></span>' : ''}
+            <span class="${isInter ? 'text-yellow-400 font-extrabold' : 'text-slate-200'}">${r.squadra}</span>
+          </td>
+          <td class="py-3 px-3 text-center text-yellow-400 font-extrabold">${r.pt}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${r.g}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${r.v}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${r.n}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${r.p}</td>
+          <td class="py-3 px-3 text-center text-slate-400">${r.dr}</td>
+        `;
+        classificaBody.appendChild(tr);
+      });
+
+      if (loader) loader.classList.add('hidden');
+      if (tabella) tabella.classList.remove('hidden');
+    }
+
     function caricaDatiDaGoogle() {
       const loaderEd = document.getElementById('loader-editoriale');
       const contenutoEd = document.getElementById('contenuto-editoriale');
       const loaderNews = document.getElementById('loader-news');
       const gridNews = document.getElementById('news-grid');
+      const loaderClassifica = document.getElementById('loader-classifica');
 
       // 1. EDITORIALE
       const urlEditorialeAntiCache = urlEditoriale + (urlEditoriale.includes('?') ? '&' : '?') + '_t=' + Date.now();
-
       fetch(urlEditorialeAntiCache)
         .then(res => {
-          if (!res.ok) throw new Error("Risposta server non valida: " + res.status);
+          if (!res.ok) throw new Error("Errore risposta server: " + res.status);
           return res.text();
         })
         .then(csvText => {
@@ -419,7 +419,6 @@
               try {
                 if (results.data && results.data.length > 0) {
                   listaEditoriali = [];
-
                   results.data.forEach((riga, idx) => {
                     const valori = Object.keys(riga)
                       .filter(k => k !== '__parsed_extra')
@@ -455,27 +454,22 @@
                   } else {
                     if (loaderEd) loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun testo trovato nella scheda Editoriale.</p>";
                   }
-                } else {
-                  if (loaderEd) loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>La scheda Editoriale sembra vuota.</p>";
                 }
               } catch (err) {
                 console.error("Errore parsing editoriale:", err);
-                if (loaderEd) loaderEd.innerHTML = `<p class='text-rose-400 text-sm'>Errore di visualizzazione: ${err.message}</p>`;
               }
             }
           });
         })
         .catch(err => {
-          console.error("Errore fetch editoriale:", err);
-          if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Verifica che il foglio sia pubblicato sul web.</p>";
+          if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
         });
 
       // 2. NEWS
       const urlNewsAntiCache = urlNews + (urlNews.includes('?') ? '&' : '?') + '_t=' + Date.now();
-
       fetch(urlNewsAntiCache)
         .then(res => {
-          if (!res.ok) throw new Error("Risposta server non valida: " + res.status);
+          if (!res.ok) throw new Error("Errore risposta server: " + res.status);
           return res.text();
         })
         .then(csvText => {
@@ -526,23 +520,94 @@
                   if (notizieValide > 0) {
                     if (loaderNews) loaderNews.classList.add('hidden');
                     if (gridNews) gridNews.classList.remove('hidden');
-                  } else {
-                    if (loaderNews) loaderNews.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
                   }
-                } else {
-                  if (loaderNews) loaderNews.innerHTML = "<p class='text-slate-400 text-sm'>Il foglio News sembra vuoto.</p>";
                 }
               } catch (err) {
                 console.error("Errore parsing news:", err);
-                if (loaderNews) loaderNews.innerHTML = `<p class='text-rose-400 text-sm'>Errore di visualizzazione: ${err.message}</p>`;
               }
             }
           });
         })
         .catch(err => {
-          console.error("Errore fetch news:", err);
-          if (loaderNews) loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Verifica la pubblicazione.</p>";
+          if (loaderNews) loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
         });
+
+      // 3. CLASSIFICA (Dinamica da Wikipedia via Google Sheets pulita)
+      if (urlClassifica && urlClassifica.startsWith('http')) {
+        const urlClassificaAntiCache = urlClassifica + (urlClassifica.includes('?') ? '&' : '?') + '_t=' + Date.now();
+        fetch(urlClassificaAntiCache)
+          .then(res => {
+            if (!res.ok) throw new Error("Errore risposta classifica: " + res.status);
+            return res.text();
+          })
+          .then(csvText => {
+            Papa.parse(csvText, {
+              header: true,
+              skipEmptyLines: 'greedy',
+              complete: function(results) {
+                try {
+                  const righe = [];
+                  if (results.data && results.data.length > 0) {
+                    results.data.forEach((riga, idx) => {
+                      let pos = leggiValore(riga, 'pos.', 'pos', 'posizione', '#');
+                      let squadra = leggiValore(riga, 'squadra', 'club', 'team');
+                      let pt = leggiValore(riga, 'pt', 'punti');
+                      let g = leggiValore(riga, 'g', 'partite', 'pg');
+                      let v = leggiValore(riga, 'v', 'vinte');
+                      let n = leggiValore(riga, 'n', 'pareggi');
+                      let p = leggiValore(riga, 'p', 'perse');
+                      let dr = leggiValore(riga, 'dr', 'diff');
+
+                      // Fallback in caso le colonne non abbiano intestazione perfetta
+                      const chiavi = Object.keys(riga);
+                      if (!squadra && chiavi.length >= 8) {
+                        pos = riga[chiavi[0]];
+                        squadra = riga[chiavi[1]];
+                        pt = riga[chiavi[2]];
+                        g = riga[chiavi[3]];
+                        v = riga[chiavi[4]];
+                        n = riga[chiavi[5]];
+                        p = riga[chiavi[6]];
+                        dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                      }
+
+                      if (squadra) {
+                        // PULIZIA TESTO: rimuove asterischi, parentesi, numeri e spazi inutili
+                        squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                        pt = String(pt || '0').replace(/[\*\.]/g, '').trim();
+                        pos = String(pos || (righe.length + 1)).replace(/[\*\.]/g, '').trim();
+
+                        if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                          righe.push({
+                            pos: parseInt(pos) || (righe.length + 1),
+                            squadra: squadra,
+                            pt: pt,
+                            g: String(g || '0').replace(/\*/g, '').trim(),
+                            v: String(v || '0').replace(/\*/g, '').trim(),
+                            n: String(n || '0').replace(/\*/g, '').trim(),
+                            p: String(p || '0').replace(/\*/g, '').trim(),
+                            dr: String(dr || '0').replace(/\*/g, '').trim()
+                          });
+                        }
+                      }
+                    });
+                  }
+
+                  if (righe.length > 0) {
+                    renderTabellaClassifica(righe);
+                  } else {
+                    if (loaderClassifica) loaderClassifica.innerHTML = "<p class='text-amber-400 text-xs'>Dati non trovati nella scheda Classifica.</p>";
+                  }
+                } catch (err) {
+                  console.error("Errore elaborazione classifica:", err);
+                }
+              }
+            });
+          })
+          .catch(err => {
+            if (loaderClassifica) loaderClassifica.innerHTML = "<p class='text-rose-400 text-xs'>Impossibile scaricare la classifica.</p>";
+          });
+      }
     }
 
     // Archivio Storico Fisso
@@ -591,7 +656,7 @@
     }
 
     // Inizializzazione automatica
-    renderPartiteEClassifica();
+    renderPartite();
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
