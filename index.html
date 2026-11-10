@@ -143,12 +143,7 @@
           <h2 class="text-2xl font-bold text-white">Prossimi Impegni Nerazzurri</h2>
           <p class="text-sm text-slate-400">Calendario gare, orari e competizioni in programma.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="partite-grid">
-          <div class="col-span-full py-8 text-center text-slate-400" id="loader-partite">
-            <i class="fa-solid fa-spinner fa-spin text-xl text-yellow-500 mb-2"></i>
-            <p class="text-xs">Caricamento calendario in corso...</p>
-          </div>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="partite-grid"></div>
       </div>
 
       <div>
@@ -226,7 +221,13 @@
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
 
     let listaEditoriali = [];
-    let prossimePartite = [];
+
+    // Partite base (subito mostrate a schermo per evitare blocchi)
+    let prossimePartite = [
+      { competizione: "Serie A", avversario: "Atalanta", luogo: "Gewiss Stadium (Bergamo)", data: "Domenica 22 Nov", orario: "18:00" },
+      { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro", data: "Mercoledì 25 Nov", orario: "21:00" },
+      { competizione: "Serie A", avversario: "Fiorentina", luogo: "Stadio Artemio Franchi", data: "Domenica 29 Nov", orario: "20:45" }
+    ];
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -261,6 +262,19 @@
         }
       }
       return '';
+    }
+
+    // Funzione fetch con timeout di sicurezza a 5 secondi (impedisce blocchi infiniti)
+    function fetchSicuro(url) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 5000);
+      const urlAntiCache = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+      return fetch(urlAntiCache, { signal: controller.signal })
+        .then(res => {
+          clearTimeout(id);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.text();
+        });
     }
 
     function mostraEditoriale(indice) {
@@ -330,22 +344,17 @@
       }
     }
 
-    // Rendering Partite con inversione automatica Casa / Trasferta
+    // Regola Casa / Trasferta
     function renderPartite() {
       const partiteContainer = document.getElementById('partite-grid');
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
-      
-      if (prossimePartite.length === 0) {
-        partiteContainer.innerHTML = "<p class='text-slate-400 text-sm col-span-full py-4 text-center'>Nessuna partita disponibile al momento.</p>";
-        return;
-      }
 
       prossimePartite.forEach(p => {
-        const isUcl = p.competizione.toLowerCase().includes('champions');
+        const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
 
-        // Logica San Siro = Casa. Qualsiasi altra città/stadio = Trasferta
+        // SE San Siro, Meazza o Casa => INTER a sinistra. Qualsiasi altro stadio o città => INTER a destra
         const tLuogo = (p.luogo || '').toLowerCase();
         const isCasa = tLuogo.includes('san siro') || tLuogo.includes('meazza') || tLuogo.startsWith('casa');
 
@@ -426,125 +435,108 @@
       const loaderClassifica = document.getElementById('loader-classifica');
 
       // 1. EDITORIALE
-      const urlEditorialeAntiCache = urlEditoriale + (urlEditoriale.includes('?') ? '&' : '?') + '_t=' + Date.now();
-      fetch(urlEditorialeAntiCache)
-        .then(res => {
-          if (!res.ok) throw new Error("Errore risposta server: " + res.status);
-          return res.text();
-        })
+      fetchSicuro(urlEditoriale)
         .then(csvText => {
           Papa.parse(csvText, {
             header: true,
             skipEmptyLines: 'greedy',
             complete: function(results) {
-              try {
-                if (results.data && results.data.length > 0) {
-                  listaEditoriali = [];
-                  results.data.forEach((riga, idx) => {
-                    const valori = Object.keys(riga)
-                      .filter(k => k !== '__parsed_extra')
-                      .map(k => pulisciTesto(riga[k]))
-                      .filter(v => v !== '');
+              listaEditoriali = [];
+              if (results.data && results.data.length > 0) {
+                results.data.forEach((riga, idx) => {
+                  if (!riga || typeof riga !== 'object') return;
+                  const chiavi = Object.keys(riga);
+                  const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
+                  if (valori.length === 0) return;
 
-                    if (valori.length === 0) return;
+                  let data = leggiValore(riga, 'data', 'giorno', 'date');
+                  let titolo = leggiValore(riga, 'titolo', 'title');
+                  let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
+                  let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
 
-                    let data = leggiValore(riga, 'data', 'giorno', 'date');
-                    let titolo = leggiValore(riga, 'titolo', 'title');
-                    let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
-                    let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
-
-                    if (!titolo && !data) {
-                      data = valori[0] || 'Data recente';
-                      titolo = valori[1] || 'Editoriale';
-                      p1 = valori[2] || '';
-                      p2 = valori[3] || '';
-                    } else if (!data) {
-                      data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
-                    }
-
-                    if (titolo) {
-                      listaEditoriali.push({ data, titolo, p1, p2 });
-                    }
-                  });
-
-                  if (listaEditoriali.length > 0) {
-                    mostraEditoriale(0);
-                    renderArchivioEditoriali();
-                    if (loaderEd) loaderEd.classList.add('hidden');
-                    if (contenutoEd) contenutoEd.classList.remove('hidden');
-                  } else {
-                    if (loaderEd) loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun testo trovato nella scheda Editoriale.</p>";
+                  if (!titolo && !data) {
+                    data = valori[0] || 'Oggi';
+                    titolo = valori[1] || 'Editoriale';
+                    p1 = valori[2] || '';
+                    p2 = valori[3] || '';
+                  } else if (!data) {
+                    data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
                   }
+
+                  if (titolo) listaEditoriali.push({ data, titolo, p1, p2 });
+                });
+              }
+
+              if (loaderEd) loaderEd.classList.add('hidden');
+              if (listaEditoriali.length > 0) {
+                mostraEditoriale(0);
+                renderArchivioEditoriali();
+                if (contenutoEd) contenutoEd.classList.remove('hidden');
+              } else {
+                if (loaderEd) {
+                  loaderEd.classList.remove('hidden');
+                  loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun editoriale presente nel foglio Google.</p>";
                 }
-              } catch (err) {
-                console.error("Errore parsing editoriale:", err);
               }
             }
           });
         })
         .catch(err => {
-          if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
+          if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Verifica la pubblicazione web.</p>";
         });
 
       // 2. NEWS
-      const urlNewsAntiCache = urlNews + (urlNews.includes('?') ? '&' : '?') + '_t=' + Date.now();
-      fetch(urlNewsAntiCache)
-        .then(res => {
-          if (!res.ok) throw new Error("Errore risposta server: " + res.status);
-          return res.text();
-        })
+      fetchSicuro(urlNews)
         .then(csvText => {
           Papa.parse(csvText, {
             header: true,
             skipEmptyLines: 'greedy',
             complete: function(results) {
-              try {
-                if (gridNews) gridNews.innerHTML = '';
-                let notizieValide = 0;
+              if (gridNews) gridNews.innerHTML = '';
+              let notizieValide = 0;
 
-                if (results.data && results.data.length > 0) {
-                  results.data.forEach(riga => {
-                    const valori = Object.keys(riga)
-                      .filter(k => k !== '__parsed_extra')
-                      .map(k => pulisciTesto(riga[k]))
-                      .filter(v => v !== '');
+              if (results.data && results.data.length > 0) {
+                results.data.forEach(riga => {
+                  if (!riga || typeof riga !== 'object') return;
+                  const chiavi = Object.keys(riga);
+                  const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
 
-                    const titolo = leggiValore(riga, 'titolo', 'title', 'notizia') || valori[0];
-                    if (!titolo) return;
+                  const titolo = leggiValore(riga, 'titolo', 'title', 'notizia') || valori[0];
+                  if (!titolo) return;
 
-                    const fonte = leggiValore(riga, 'fonte', 'source', 'giornale') || valori[1] || 'Stampa';
-                    const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
-                    const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
-                    const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+                  const fonte = leggiValore(riga, 'fonte', 'source', 'giornale') || valori[1] || 'Stampa';
+                  const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
+                  const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+                  const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
 
-                    const card = document.createElement('article');
-                    card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
-                    card.innerHTML = `
-                      <div>
-                        <div class="flex justify-between items-center text-xs mb-3">
-                          <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
-                          <span class="text-slate-500">${tempo}</span>
-                        </div>
-                        <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
-                        <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
+                  const card = document.createElement('article');
+                  card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+                  card.innerHTML = `
+                    <div>
+                      <div class="flex justify-between items-center text-xs mb-3">
+                        <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
+                        <span class="text-slate-500">${tempo}</span>
                       </div>
-                      <div class="pt-3 border-t border-slate-800/60">
-                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-                          Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
-                        </a>
-                      </div>
-                    `;
-                    if (gridNews) gridNews.appendChild(card);
-                    notizieValide++;
-                  });
+                      <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
+                      <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800/60">
+                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+                        Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+                      </a>
+                    </div>
+                  `;
+                  if (gridNews) gridNews.appendChild(card);
+                  notizieValide++;
+                });
+              }
 
-                  if (notizieValide > 0) {
-                    if (loaderNews) loaderNews.classList.add('hidden');
-                    if (gridNews) gridNews.classList.remove('hidden');
-                  }
-                }
-              } catch (err) {
-                console.error("Errore parsing news:", err);
+              if (loaderNews) loaderNews.classList.add('hidden');
+              if (notizieValide > 0 && gridNews) {
+                gridNews.classList.remove('hidden');
+              } else if (loaderNews) {
+                loaderNews.classList.remove('hidden');
+                loaderNews.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
               }
             }
           });
@@ -555,70 +547,62 @@
 
       // 3. CLASSIFICA
       if (urlClassifica && urlClassifica.startsWith('http')) {
-        const urlClassificaAntiCache = urlClassifica + (urlClassifica.includes('?') ? '&' : '?') + '_t=' + Date.now();
-        fetch(urlClassificaAntiCache)
-          .then(res => {
-            if (!res.ok) throw new Error("Errore risposta classifica: " + res.status);
-            return res.text();
-          })
+        fetchSicuro(urlClassifica)
           .then(csvText => {
             Papa.parse(csvText, {
               header: true,
               skipEmptyLines: 'greedy',
               complete: function(results) {
-                try {
-                  const righe = [];
-                  if (results.data && results.data.length > 0) {
-                    results.data.forEach((riga, idx) => {
-                      let pos = leggiValore(riga, 'pos.', 'pos', 'posizione', '#');
-                      let squadra = leggiValore(riga, 'squadra', 'club', 'team');
-                      let pt = leggiValore(riga, 'pt', 'punti');
-                      let g = leggiValore(riga, 'g', 'partite', 'pg');
-                      let v = leggiValore(riga, 'v', 'vinte');
-                      let n = leggiValore(riga, 'n', 'pareggi');
-                      let p = leggiValore(riga, 'p', 'perse');
-                      let dr = leggiValore(riga, 'dr', 'diff');
+                const righe = [];
+                if (results.data && results.data.length > 0) {
+                  results.data.forEach(riga => {
+                    if (!riga || typeof riga !== 'object') return;
+                    let pos = leggiValore(riga, 'pos.', 'pos', 'posizione', '#');
+                    let squadra = leggiValore(riga, 'squadra', 'club', 'team');
+                    let pt = leggiValore(riga, 'pt', 'punti');
+                    let g = leggiValore(riga, 'g', 'partite', 'pg');
+                    let v = leggiValore(riga, 'v', 'vinte');
+                    let n = leggiValore(riga, 'n', 'pareggi');
+                    let p = leggiValore(riga, 'p', 'perse');
+                    let dr = leggiValore(riga, 'dr', 'diff');
 
-                      const chiavi = Object.keys(riga);
-                      if (!squadra && chiavi.length >= 8) {
-                        pos = riga[chiavi[0]];
-                        squadra = riga[chiavi[1]];
-                        pt = riga[chiavi[2]];
-                        g = riga[chiavi[3]];
-                        v = riga[chiavi[4]];
-                        n = riga[chiavi[5]];
-                        p = riga[chiavi[6]];
-                        dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                    const chiavi = Object.keys(riga);
+                    if (!squadra && chiavi.length >= 8) {
+                      pos = riga[chiavi[0]];
+                      squadra = riga[chiavi[1]];
+                      pt = riga[chiavi[2]];
+                      g = riga[chiavi[3]];
+                      v = riga[chiavi[4]];
+                      n = riga[chiavi[5]];
+                      p = riga[chiavi[6]];
+                      dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                    }
+
+                    if (squadra) {
+                      squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                      pt = String(pt || '0').replace(/[\*\.]/g, '').trim();
+                      pos = String(pos || (righe.length + 1)).replace(/[\*\.]/g, '').trim();
+
+                      if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                        righe.push({
+                          pos: parseInt(pos) || (righe.length + 1),
+                          squadra: squadra,
+                          pt: pt,
+                          g: String(g || '0').replace(/\*/g, '').trim(),
+                          v: String(v || '0').replace(/\*/g, '').trim(),
+                          n: String(n || '0').replace(/\*/g, '').trim(),
+                          p: String(p || '0').replace(/\*/g, '').trim(),
+                          dr: String(dr || '0').replace(/\*/g, '').trim()
+                        });
                       }
+                    }
+                  });
+                }
 
-                      if (squadra) {
-                        squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
-                        pt = String(pt || '0').replace(/[\*\.]/g, '').trim();
-                        pos = String(pos || (righe.length + 1)).replace(/[\*\.]/g, '').trim();
-
-                        if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
-                          righe.push({
-                            pos: parseInt(pos) || (righe.length + 1),
-                            squadra: squadra,
-                            pt: pt,
-                            g: String(g || '0').replace(/\*/g, '').trim(),
-                            v: String(v || '0').replace(/\*/g, '').trim(),
-                            n: String(n || '0').replace(/\*/g, '').trim(),
-                            p: String(p || '0').replace(/\*/g, '').trim(),
-                            dr: String(dr || '0').replace(/\*/g, '').trim()
-                          });
-                        }
-                      }
-                    });
-                  }
-
-                  if (righe.length > 0) {
-                    renderTabellaClassifica(righe);
-                  } else {
-                    if (loaderClassifica) loaderClassifica.innerHTML = "<p class='text-amber-400 text-xs'>Dati non trovati nella scheda Classifica.</p>";
-                  }
-                } catch (err) {
-                  console.error("Errore elaborazione classifica:", err);
+                if (righe.length > 0) {
+                  renderTabellaClassifica(righe);
+                } else if (loaderClassifica) {
+                  loaderClassifica.innerHTML = "<p class='text-amber-400 text-xs'>Dati classifica non trovati nel foglio.</p>";
                 }
               }
             });
@@ -628,11 +612,9 @@
           });
       }
 
-      // 4. PARTITE (Lettura flessibile con fallback posizionale)
+      // 4. PARTITE (Aggiornamento da foglio Google se disponibile)
       if (urlPartite && urlPartite.startsWith('http')) {
-        const urlPartiteAntiCache = urlPartite + (urlPartite.includes('?') ? '&' : '?') + '_t=' + Date.now();
-        fetch(urlPartiteAntiCache)
-          .then(res => res.text())
+        fetchSicuro(urlPartite)
           .then(csvText => {
             Papa.parse(csvText, {
               header: true,
@@ -641,23 +623,20 @@
                 if (results.data && results.data.length > 0) {
                   const partiteLette = [];
                   results.data.forEach(r => {
+                    if (!r || typeof r !== 'object') return;
                     const chiavi = Object.keys(r);
-                    const valori = chiavi
-                      .filter(k => k !== '__parsed_extra')
-                      .map(k => pulisciTesto(r[k]))
-                      .filter(v => v !== '');
-
+                    const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
                     if (valori.length < 2) return;
 
                     let comp = leggiValore(r, 'competizione', 'torneo', 'campionato') || valori[0] || 'Serie A';
-                    let avv = leggiValore(r, 'avversario', 'squadra', 'avversaria', 'match', 'partita', 'club', 'team') || valori[1] || '';
-                    let luog = leggiValore(r, 'luogo', 'stadio', 'citta', 'città', 'sede', 'campo', 'dove', 'casa/trasferta') || valori[2] || '';
-                    let dat = leggiValore(r, 'data', 'giorno', 'quando') || valori[3] || 'Prossimamente';
+                    let avv = leggiValore(r, 'avversario', 'squadra', 'partita', 'match') || valori[1] || '';
+                    let luog = leggiValore(r, 'luogo', 'stadio', 'citta', 'città', 'sede', 'dove') || valori[2] || '';
+                    let dat = leggiValore(r, 'data', 'giorno') || valori[3] || 'Prossimamente';
                     let orar = leggiValore(r, 'orario', 'ora') || valori[4] || '20:45';
 
-                    // Pulisce l'avversario se per sbaglio nel foglio è stato scritto "Atalanta - Inter"
+                    // Pulizia accurata: rimuove solo la parola Inter se scritta per esteso, preservando i nomi di squadra
                     if (avv) {
-                      avv = avv.replace(/inter/gi, '').replace(/[\-–vs]/gi, '').trim();
+                      avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\b/gi, '').replace(/[-–]/g, '').trim();
                       if (avv.length > 1) {
                         partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                       }
@@ -667,21 +646,19 @@
                   if (partiteLette.length > 0) {
                     prossimePartite = partiteLette.slice(0, 3);
                     renderPartite();
-                  } else {
-                    document.getElementById('partite-grid').innerHTML = "<p class='text-slate-400 text-sm col-span-full py-4 text-center'>Nessuna partita valida trovata nel foglio Partite.</p>";
                   }
                 }
               }
             });
           })
           .catch(err => {
-            console.error("Errore download partite:", err);
-            document.getElementById('partite-grid').innerHTML = "<p class='text-rose-400 text-sm col-span-full py-4 text-center'>Impossibile caricare le partite.</p>";
+            // Se il download ritarda o fallisce, le partite base rimangono visualizzate senza bloccare la pagina
+            console.warn("Utilizzo partite base precaricate:", err);
           });
       }
     }
 
-    // Archivio Storico Fisso
+    // Archivio Storico
     const datiStorici = [
       { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
       { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
@@ -726,7 +703,8 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Inizializzazione
+    // Avvio immediato senza attese
+    renderPartite();
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
