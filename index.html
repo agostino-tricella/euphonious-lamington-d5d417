@@ -3,10 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spazio Nerazzurro | News, Editoriale e Archivio</title>
+  
+  <title>Spazio Nerazzurro | News, Editoriale Quotidiano e Storia dell'Inter</title>
+
+  <!-- Meta Tag SEO -->
+  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, rassegna stampa in tempo reale e archivio storico con motore di ricerca.">
+  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, editoriale Inter, rassegna stampa Inter, storia Inter, partite Inter, calciomercato Inter">
+  <meta name="author" content="Redazione Spazio Nerazzurro">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+
+  <!-- Verifica Google Search Console -->
+  <meta name="google-site-verification" content="Y_NGmcsTcRh2D-xqp5l-CftXyXIFZ3q8kS03vEKQWSk" />
+
+  <!-- Open Graph per anteprime WhatsApp, Telegram e Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Spazio Nerazzurro | 100% Libero da Pubblicità">
+  <meta property="og:description" content="L'aggregatore indipendente fatto da un interista per gli interisti: editoriale quotidiano, rassegna stampa e trofei storici.">
+  <meta property="og:locale" content="it_IT">
+  <meta property="og:site_name" content="Spazio Nerazzurro">
+
+  <!-- Colore barra navigazione mobile -->
+  <meta name="theme-color" content="#00133e">
+
+  <!-- Risorse Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
     .bg-inter-blue { background-color: #00133e; }
     .bg-inter-card { background-color: #0b1a30; }
@@ -48,7 +71,7 @@
     <!-- SEZIONE 1: EDITORIALE & ARCHIVIO EDITORIALI -->
     <section id="section-editoriale" class="tab-content">
       
-      <!-- Avviso quando si legge un vecchio editoriale -->
+      <!-- Avviso lettura archivio -->
       <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
         <span class="flex items-center gap-2">
           <i class="fa-solid fa-clock-rotate-left text-yellow-400"></i>
@@ -87,7 +110,7 @@
         </div>
       </div>
 
-      <!-- Elenco Editoriali Precedenti -->
+      <!-- Archivio Editoriali Precedenti -->
       <div id="sezione-archivio-editoriali" class="mt-10 hidden">
         <div class="mb-4 flex items-center gap-2">
           <i class="fa-solid fa-box-archive text-yellow-500 text-lg"></i>
@@ -95,9 +118,7 @@
         </div>
         <p class="text-sm text-slate-400 mb-6">Recupera i punti di vista e le analisi pubblicate nei giorni scorsi.</p>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="archivio-editoriali-grid">
-          <!-- Popolato via JS -->
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="archivio-editoriali-grid"></div>
       </div>
 
     </section>
@@ -145,13 +166,10 @@
   </footer>
 
   <script>
-    // =========================================================================
-    // I LINK PUBBLICI CSV DEL TUO FOGLIO GOOGLE (Aggiornati e definitivi)
-    // =========================================================================
+    // Link CSV Fogli Google
     const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
 
-    // Variabile per conservare tutti gli editoriali scaricati
     let listaEditoriali = [];
 
     function switchTab(tabId) {
@@ -178,7 +196,6 @@
       return '';
     }
 
-    // Mostra un editoriale specifico (indice 0 = l'ultimo, 1+ = archivio)
     function mostraEditoriale(indice) {
       if (!listaEditoriali[indice]) return;
 
@@ -202,7 +219,6 @@
       }
     }
 
-    // Costruisce la griglia degli editoriali passati
     function renderArchivioEditoriali() {
       const container = document.getElementById('sezione-archivio-editoriali');
       const grid = document.getElementById('archivio-editoriali-grid');
@@ -215,7 +231,6 @@
 
       container.classList.remove('hidden');
 
-      // Mostra gli editoriali a partire dal secondo (indice 1 in poi)
       for (let i = 1; i < listaEditoriali.length; i++) {
         const ed = listaEditoriali[i];
         const card = document.createElement('div');
@@ -241,9 +256,8 @@
       }
     }
 
-    // Caricamento Dati
     function caricaDatiDaGoogle() {
-      // 1. EDITORIALE & ARCHIVIO
+      // 1. EDITORIALE
       Papa.parse(urlEditoriale, {
         download: true,
         header: true,
@@ -264,14 +278,12 @@
               let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
               let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
 
-              // Se non ci sono intestazioni o non le trova, ripiega sull'ordine delle celle
               if (!titolo && !data) {
                 data = valori[0] || 'Data recente';
                 titolo = valori[1] || 'Editoriale';
                 p1 = valori[2] || '';
                 p2 = valori[3] || '';
               } else if (!data) {
-                // Genera la data di oggi per il primo editoriale se manca
                 data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
               }
 
@@ -358,7 +370,7 @@
       });
     }
 
-    // Archivio Storico
+    // Archivio Storico Fai-da-te
     const datiStorici = [
       { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
       { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
@@ -402,7 +414,6 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio iniziale
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
