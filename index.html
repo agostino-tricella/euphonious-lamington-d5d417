@@ -6,7 +6,6 @@
   <title>Spazio Nerazzurro | News, Editoriale e Archivio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <!-- Libreria per leggere i dati da Google Sheets -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     .bg-inter-blue { background-color: #00133e; }
@@ -87,12 +86,10 @@
         <p class="text-sm">Recupero notizie dal server in corso...</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid">
-        <!-- Generato dal Foglio Google -->
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid"></div>
     </section>
 
-    <!-- SEZIONE 3: ARCHIVIO STORICO (Fisso) -->
+    <!-- SEZIONE 3: ARCHIVIO STORICO -->
     <section id="section-storia" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -118,9 +115,6 @@
   </footer>
 
   <script>
-    // =========================================================================
-    // INSERISCI QUI I DUE LINK CSV CHE HAI COPIATO DA GOOGLE SHEETS
-    // =========================================================================
     const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQxqwu5E5IYh1608LxJfIv9uZFys9mAANWQDj8czHfSXAkjY4yTMQ7-aOgEkk_NkrLSVT_UkAyGZ17y/pub?gid=1781565219&single=true&output=csv";
     const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQxqwu5E5IYh1608LxJfIv9uZFys9mAANWQDj8czHfSXAkjY4yTMQ7-aOgEkk_NkrLSVT_UkAyGZ17y/pub?gid=0&single=true&output=csv";
 
@@ -140,66 +134,107 @@
       btn.classList.remove('text-slate-300');
     }
 
-    // Caricamento Dati dal Backoffice (Fogli Google)
-    function caricaDatiDaGoogle() {
-      // 1. Carica Editoriale
-      if(urlEditoriale.includes("http")) {
-        Papa.parse(urlEditoriale, {
-          download: true,
-          header: true,
-          complete: function(results) {
-            const data = results.data[0]; // Prende la prima riga
-            if(data && data.Titolo) {
-              document.getElementById('editoriale-titolo').textContent = data.Titolo;
-              document.getElementById('editoriale-p1').textContent = data.Paragrafo1 || '';
-              document.getElementById('editoriale-p2').textContent = data.Paragrafo2 || '';
-              document.getElementById('loader-editoriale').classList.add('hidden');
-              document.getElementById('contenuto-editoriale').classList.remove('hidden');
-            }
-          }
-        });
-      } else {
-        document.getElementById('loader-editoriale').innerHTML = "<p class='text-red-400'>Inserisci il link del CSV dell'Editoriale nel codice.</p>";
+    // Funzione di lettura flessibile (indifferente a maiuscole, minuscole e spazi)
+    function leggiValore(riga, ...nomiPossibili) {
+      if (!riga) return '';
+      const chiavi = Object.keys(riga);
+      for (const nome of nomiPossibili) {
+        const chiaveTrovata = chiavi.find(k => k.trim().toLowerCase() === nome.trim().toLowerCase());
+        if (chiaveTrovata && riga[chiaveTrovata]) {
+          return riga[chiaveTrovata].trim();
+        }
       }
+      return '';
+    }
 
-      // 2. Carica News
-      if(urlNews.includes("http")) {
-        Papa.parse(urlNews, {
-          download: true,
-          header: true,
-          complete: function(results) {
-            const grid = document.getElementById('news-grid');
-            grid.innerHTML = '';
-            
-            results.data.forEach(art => {
-              if(!art.Titolo) return; // Salta le righe vuote del foglio Excel
-              
+    // Caricamento Dati dal Backoffice
+    function caricaDatiDaGoogle() {
+      // 1. CARICAMENTO EDITORIALE
+      Papa.parse(urlEditoriale, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const loader = document.getElementById('loader-editoriale');
+          const contenuto = document.getElementById('contenuto-editoriale');
+
+          if (results.data && results.data.length > 0) {
+            const riga = results.data[0];
+            const valori = Object.values(riga).filter(v => v && v.trim() !== '');
+
+            // Cerca prima per nome colonna, altrimenti usa l'ordine di posizione (colonna 1, 2, 3)
+            const titolo = leggiValore(riga, 'titolo', 'title') || valori[0] || 'Nuovo Editoriale';
+            const p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo', 'testo1') || valori[1] || '';
+            const p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2', 'testo2') || valori[2] || '';
+
+            document.getElementById('editoriale-titolo').textContent = titolo;
+            document.getElementById('editoriale-p1').textContent = p1;
+            document.getElementById('editoriale-p2').textContent = p2;
+
+            loader.classList.add('hidden');
+            contenuto.classList.remove('hidden');
+          } else {
+            loader.innerHTML = "<p class='text-amber-400 text-sm'>Il foglio Editoriale sembra vuoto. Aggiungi testo alla riga 2 del tuo Google Sheet.</p>";
+          }
+        },
+        error: function(err) {
+          document.getElementById('loader-editoriale').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Controlla la pubblicazione web del foglio.</p>";
+        }
+      });
+
+      // 2. CARICAMENTO RASSEGNA STAMPA
+      Papa.parse(urlNews, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          const grid = document.getElementById('news-grid');
+          const loader = document.getElementById('loader-news');
+          grid.innerHTML = '';
+
+          if (results.data && results.data.length > 0) {
+            results.data.forEach(riga => {
+              const valori = Object.values(riga).filter(v => v && v.trim() !== '');
+              if (valori.length === 0) return;
+
+              const titolo = leggiValore(riga, 'titolo', 'title') || valori[0];
+              const fonte = leggiValore(riga, 'fonte', 'source') || valori[1] || 'News';
+              const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+
+              if (!titolo) return;
+
               const card = document.createElement('article');
               card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
               card.innerHTML = `
                 <div>
                   <div class="flex justify-between items-center text-xs mb-3">
-                    <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${art.Fonte || 'News'}</span>
-                    <span class="text-slate-500">${art.Tempo || 'Oggi'}</span>
+                    <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
+                    <span class="text-slate-500">${tempo}</span>
                   </div>
-                  <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${art.Titolo}</h3>
-                  <p class="text-sm text-slate-400 leading-relaxed mb-4">${art.Riassunto || ''}</p>
+                  <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
+                  <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
                 </div>
                 <div class="pt-3 border-t border-slate-800/60">
-                  <a href="${art.Link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-                    Leggi l'articolo originale su ${art.Fonte || ''} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+                  <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+                    Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
                   </a>
                 </div>
               `;
               grid.appendChild(card);
             });
-            document.getElementById('loader-news').classList.add('hidden');
+
+            loader.classList.add('hidden');
             grid.classList.remove('hidden');
+          } else {
+            loader.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio.</p>";
           }
-        });
-      } else {
-        document.getElementById('loader-news').innerHTML = "<p class='text-red-400'>Inserisci il link del CSV delle News nel codice.</p>";
-      }
+        },
+        error: function(err) {
+          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Controlla la pubblicazione del foglio News.</p>";
+        }
+      });
     }
 
     // Dati Storici (Fissi)
@@ -243,7 +278,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio al caricamento
+    // Avvio
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
