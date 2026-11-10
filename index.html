@@ -218,13 +218,17 @@
     const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
+    
+    // (Opzionale) Se crei la 4a scheda "Partite" sul foglio Google, incolla qui il relativo link CSV:
+    const urlPartite = "";
 
     let listaEditoriali = [];
 
-    const prossimePartite = [
-      { competizione: "Serie A", avversario: "Lazio", luogo: "San Siro (Casa)", data: "Domenica 23 Nov", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" },
-      { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro (Casa)", data: "Mercoledì 26 Nov", orario: "21:00", badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-      { competizione: "Serie A", avversario: "Fiorentina", luogo: "Artemio Franchi (Trasferta)", data: "Domenica 30 Nov", orario: "18:00", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" }
+    // Calendario 2026 predefinito
+    let prossimePartite = [
+      { competizione: "Serie A", avversario: "Milan", luogo: "San Siro (Casa)", data: "Sabato 21 Nov 2026", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" },
+      { competizione: "Champions League", avversario: "Atletico Madrid", luogo: "Metropolitano (Trasferta)", data: "Mercoledì 25 Nov 2026", orario: "21:00", badge: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+      { competizione: "Serie A", avversario: "Roma", luogo: "Olimpico (Trasferta)", data: "Domenica 29 Nov 2026", orario: "20:45", badge: "bg-blue-600/20 text-blue-400 border-blue-500/30" }
     ];
 
     function switchTab(tabId) {
@@ -334,11 +338,14 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
       prossimePartite.forEach(p => {
+        const isUcl = p.competizione.toLowerCase().includes('champions');
+        const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
+
         const card = document.createElement('div');
         card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden";
         card.innerHTML = `
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs border px-2 py-0.5 rounded font-semibold ${p.badge}">${p.competizione}</span>
+            <span class="text-xs border px-2 py-0.5 rounded font-semibold ${badgeStyle}">${p.competizione}</span>
             <span class="text-xs text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${p.orario}</span>
           </div>
           <div class="flex items-center justify-between my-4">
@@ -532,7 +539,7 @@
           if (loaderNews) loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
         });
 
-      // 3. CLASSIFICA (Dinamica da Wikipedia via Google Sheets pulita)
+      // 3. CLASSIFICA (Dinamica da Wikipedia via Google Sheets)
       if (urlClassifica && urlClassifica.startsWith('http')) {
         const urlClassificaAntiCache = urlClassifica + (urlClassifica.includes('?') ? '&' : '?') + '_t=' + Date.now();
         fetch(urlClassificaAntiCache)
@@ -558,7 +565,6 @@
                       let p = leggiValore(riga, 'p', 'perse');
                       let dr = leggiValore(riga, 'dr', 'diff');
 
-                      // Fallback in caso le colonne non abbiano intestazione perfetta
                       const chiavi = Object.keys(riga);
                       if (!squadra && chiavi.length >= 8) {
                         pos = riga[chiavi[0]];
@@ -572,7 +578,6 @@
                       }
 
                       if (squadra) {
-                        // PULIZIA TESTO: rimuove asterischi, parentesi, numeri e spazi inutili
                         squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
                         pt = String(pt || '0').replace(/[\*\.]/g, '').trim();
                         pos = String(pos || (righe.length + 1)).replace(/[\*\.]/g, '').trim();
@@ -607,6 +612,39 @@
           .catch(err => {
             if (loaderClassifica) loaderClassifica.innerHTML = "<p class='text-rose-400 text-xs'>Impossibile scaricare la classifica.</p>";
           });
+      }
+
+      // 4. PARTITE DA GOOGLE SHEETS (Se configurato urlPartite)
+      if (urlPartite && urlPartite.startsWith('http')) {
+        const urlPartiteAntiCache = urlPartite + (urlPartite.includes('?') ? '&' : '?') + '_t=' + Date.now();
+        fetch(urlPartiteAntiCache)
+          .then(res => res.text())
+          .then(csvText => {
+            Papa.parse(csvText, {
+              header: true,
+              skipEmptyLines: 'greedy',
+              complete: function(results) {
+                if (results.data && results.data.length > 0) {
+                  const partiteLette = [];
+                  results.data.forEach(r => {
+                    const comp = leggiValore(r, 'competizione', 'torneo') || 'Partita';
+                    const avv = leggiValore(r, 'avversario', 'squadra') || 'Avversario';
+                    const luog = leggiValore(r, 'luogo', 'stadio') || 'San Siro';
+                    const dat = leggiValore(r, 'data', 'giorno') || 'Prossimamente';
+                    const orar = leggiValore(r, 'orario', 'ora') || '20:45';
+                    if (avv && avv !== 'Avversario') {
+                      partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
+                    }
+                  });
+                  if (partiteLette.length > 0) {
+                    prossimePartite = partiteLette.slice(0, 3);
+                    renderPartite();
+                  }
+                }
+              }
+            });
+          })
+          .catch(err => console.log("Uso calendario predefinito:", err));
       }
     }
 
