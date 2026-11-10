@@ -28,15 +28,15 @@
 
       <!-- Navigazione Sezioni -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
-        <a href="#editoriale" onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
+        <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
-        </a>
-        <a href="#news" onclick="switchTab('news')" id="tab-news" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-newspaper mr-2"></i>Ultime News
-        </a>
-        <a href="#storia" onclick="switchTab('storia')" id="tab-storia" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
+        </button>
+        <button onclick="switchTab('news')" id="tab-news" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-newspaper mr-2"></i>Rassegna Stampa
+        </button>
+        <button onclick="switchTab('storia')" id="tab-storia" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-trophy mr-2"></i>Archivio Storico
-        </a>
+        </button>
       </nav>
     </div>
   </header>
@@ -53,11 +53,13 @@
           <span id="data-odierna"></span>
         </div>
         
-        <h2 class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
+        <!-- TITOLO EDITORIALE -->
+        <h2 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
           La gestione della rosa e il carattere nei momenti decisivi
         </h2>
         
-        <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
+        <!-- TESTO EDITORIALE -->
+        <div id="editoriale-testo" class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
           <p>
             In questa fase della stagione la continuità di rendimento dipende dalla lucidità mentale e dalla profondità dell'organico. Saper alternare le forze senza perdere identità tattica è il vero segno di maturità della squadra.
           </p>
@@ -65,23 +67,25 @@
             I prossimi impegni impongono determinazione e attenzione ai dettagli: ogni singolo punto in campionato e ogni passaggio del turno europeo si costruiscono sulla solidità difensiva e sul cinismo sotto porta.
           </p>
         </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <span>A cura della Redazione</span>
+          <span>Aggiornato ogni giorno</span>
+        </div>
       </div>
     </section>
 
-    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA -->
+    <!-- SEZIONE 2: RASSEGNA STAMPA -->
     <section id="section-news" class="tab-content hidden">
-      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="mb-6 flex justify-between items-center">
         <div>
-          <h2 class="text-2xl font-bold">Rassegna Stampa in Tempo Reale</h2>
-          <p class="text-sm text-slate-400">Clicca sul titolo per leggere l'articolo completo sulla testata originale.</p>
+          <h2 class="text-2xl font-bold">Rassegna Stampa & Notizie</h2>
+          <p class="text-sm text-slate-400">Gli articoli più rilevanti selezionati dal web con riferimento diretto alla fonte.</p>
         </div>
-        <button onclick="caricaNotizie(true)" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
-          <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> Aggiorna news
-        </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="news-grid">
-        <!-- Notizie caricate da JavaScript -->
+        <!-- Generato dallo script -->
       </div>
     </section>
 
@@ -90,7 +94,7 @@
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold">Archivio Storico & Trofei</h2>
-          <p class="text-sm text-slate-400">Digita un anno, un trofeo o una leggenda per filtrare la storia del club.</p>
+          <p class="text-sm text-slate-400">Digita un anno, un trofeo o una leggenda per filtrare la storia nerazzurra.</p>
         </div>
         <div class="relative w-full md:w-80">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-sm"></i>
@@ -105,23 +109,99 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="history-container">
-        <!-- Popolato da JavaScript -->
+        <!-- Generato dallo script -->
       </div>
       <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun momento storico corrisponde alla ricerca.</p>
     </section>
 
   </main>
 
+  <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
+    <p>Spazio libero dedicato all'Inter. Nessun cookie di tracciamento o banner pubblicitario.</p>
+  </footer>
+
   <script>
-    // 1. DATA ODIERNA
-    const dataOdiernaEl = document.getElementById('data-odierna');
-    if (dataOdiernaEl) {
-      dataOdiernaEl.textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
+    // ==========================================
+    // 1. LE NOTIZIE DEL GIORNO (Modificale qui)
+    // ==========================================
+    const rassegnaStampa = [
+      {
+        titolo: "Report da Appiano Gentile: il programma di allenamento e le condizioni del gruppo",
+        fonte: "FCInterNews",
+        tempo: "Oggi",
+        riassunto: "Seduta mattutina incentrata su tattica e scarico atletico in vista del prossimo impegno ufficiale.",
+        link: "https://www.fcinternews.it/"
+      },
+      {
+        titolo: "Focus tattico sui movimenti offensivi e la rotazione dei centrocampisti",
+        fonte: "Gazzetta dello Sport",
+        tempo: "Oggi",
+        riassunto: "Analisi dettagliata sulla manovra nerazzurra: come gli inserimenti senza palla creano spazi contro le difese schierate.",
+        link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
+      },
+      {
+        titolo: "Intervista esclusiva: concentrazione e solidità per la volata stagionale",
+        fonte: "Sky Sport",
+        tempo: "Ieri",
+        riassunto: "Dichiarazioni rilasciate ai microfoni sul valore del collettivo e sull'importanza di mantenere alta la concentrazione.",
+        link: "https://sport.sky.it/calcio/squadre/inter/news"
+      },
+      {
+        titolo: "I numeri della difesa: solidità casalinga e primato nel recupero palla",
+        fonte: "Corriere dello Sport",
+        tempo: "Ieri",
+        riassunto: "Le statistiche confermano l'efficacia del pressing alto e l'organizzazione della linea arretrata.",
+        link: "https://www.corrieredellosport.it/calcio/squadre/inter"
+      }
+    ];
 
-    // 2. NAVIGAZIONE TAB
-    let notizieCaricate = false;
+    // ==========================================
+    // 2. ARCHIVIO STORICO
+    // ==========================================
+    const datiStorici = [
+      {
+        anno: "1908",
+        titolo: "La Fondazione: Fratelli del Mondo",
+        categoria: "Origini",
+        dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.",
+        link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano"
+      },
+      {
+        anno: "1964 - 1965",
+        titolo: "La Grande Inter di Helenio Herrera",
+        categoria: "Era Herrera",
+        dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.",
+        link: "https://it.wikipedia.org/wiki/Grande_Inter"
+      },
+      {
+        anno: "1998",
+        titolo: "La Coppa UEFA a Parigi",
+        categoria: "Europa",
+        dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.",
+        link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998"
+      },
+      {
+        anno: "2010",
+        titolo: "Il Triplete Leggendario",
+        categoria: "Trionfo",
+        dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.",
+        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010"
+      },
+      {
+        anno: "2024",
+        titolo: "La Seconda Stella",
+        categoria: "Scudetto",
+        dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.",
+        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024"
+      }
+    ];
 
+    // Imposta data odierna
+    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { 
+      day: 'numeric', month: 'long', year: 'numeric' 
+    });
+
+    // Funzione cambio schede
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -129,76 +209,24 @@
         btn.classList.add('text-slate-300');
       });
 
-      const activeSection = document.getElementById('section-' + tabId);
-      const activeBtn = document.getElementById('tab-' + tabId);
-      
-      if (activeSection) activeSection.classList.remove('hidden');
-      if (activeBtn) {
-        activeBtn.classList.add('bg-blue-700', 'text-white', 'shadow');
-        activeBtn.classList.remove('text-slate-300');
-      }
-
-      if (tabId === 'news' && !notizieCaricate) {
-        caricaNotizie();
+      const target = document.getElementById('section-' + tabId);
+      const btn = document.getElementById('tab-' + tabId);
+      if (target) target.classList.remove('hidden');
+      if (btn) {
+        btn.classList.add('bg-blue-700', 'text-white', 'shadow');
+        btn.classList.remove('text-slate-300');
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      let hash = window.location.hash.substring(1);
-      if (hash !== 'editoriale' && hash !== 'news' && hash !== 'storia') {
-        hash = 'editoriale';
-      }
-      switchTab(hash);
-    });
-
-    // 3. RECUPERO FEED CON MULTI-PROXY A CASCATA
-    const fontiDiretteFallback = [
-      {
-        titolo: "Rassegna Stampa Ufficiale: notizie e report su Appiano Gentile",
-        fonte: "FCInterNews",
-        data: "Canale Live",
-        link: "https://www.fcinternews.it/"
-      },
-      {
-        titolo: "Approfondimenti tattici, pagelle e ultime formazioni nerazzurre",
-        fonte: "Gazzetta dello Sport",
-        data: "Speciale Inter",
-        link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
-      },
-      {
-        titolo: "Tutte le novità sui singoli, infermeria e interviste pre-partita",
-        fonte: "Sky Sport",
-        data: "Canale Inter",
-        link: "https://sport.sky.it/calcio/squadre/inter/news"
-      },
-      {
-        titolo: "Statistiche, commenti a caldo e focus sui protagonisti",
-        fonte: "Corriere dello Sport",
-        data: "Rubrica Inter",
-        link: "https://www.corrieredellosport.it/calcio/squadre/inter"
-      },
-      {
-        titolo: "Calciomercato e retroscena societari sul club nerazzurro",
-        fonte: "SportMediaset",
-        data: "Speciale",
-        link: "https://www.sportmediaset.mediaset.it/calcio/inter/"
-      },
-      {
-        titolo: "Analisi tecnica del campionato e del cammino europeo",
-        fonte: "Tuttosport",
-        data: "Focus",
-        link: "https://www.tuttosport.com/calcio/inter"
-      }
-    ];
-
-    async function caricaNotizie(forzaAggiornamento = false) {
-      const grid = document.getElementById('news-grid');
-      const refreshIcon = document.getElementById('refresh-icon');
-      if (refreshIcon) refreshIcon.classList.add('fa-spin');
+    // Costruisce la sezione news
+    function renderNews() {
+      const container = document.getElementById('news-grid');
+      container.innerHTML = '';
       
-      grid.innerHTML = `
-        <div class="col-span-full py-16 text-center text-slate-400">
-          <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
-          <p class="text-sm">Collegamento alle testate sportive in corso...</p>
-        </div>
-      `;
+      rassegnaStampa.forEach(art => {
+        const card = document.createElement('article');
+        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center text-xs mb-3">
+              <span class="bg-blue-950 text-yellow
