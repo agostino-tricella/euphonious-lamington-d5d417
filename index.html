@@ -27,6 +27,7 @@
         </div>
       </div>
 
+      <!-- Navigazione Sezioni -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
         <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
@@ -41,6 +42,7 @@
     </div>
   </header>
 
+  <!-- Contenitore Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
     <!-- SEZIONE 1: EDITORIALE -->
@@ -111,17 +113,25 @@
   </main>
 
   <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-    <p>Spazio libero dedicato all'Inter. Nessun cookie di tracciamento.</p>
+    <p>Spazio libero dedicato all'Inter. Nessun cookie di tracciamento o banner pubblicitario.</p>
   </footer>
 
   <script>
-    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
-    const urlNews = "https://https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
+    // =========================================================================
+    // I LINK PUBBLICI CSV DEL TUO FOGLIO GOOGLE
+    // =========================================================================
+    // Se l'editoriale era su una scheda specifica (es. gid diverso), mantieni il gid che funzionava
+    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1781565219&single=true&output=csv";
+    
+    // Il link delle News che hai inviato, convertito in formato CSV
+    const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
 
-    // Data Odierna
-    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+    // Data odierna
+    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { 
+      day: 'numeric', month: 'long', year: 'numeric' 
+    });
 
-    // Cambio Schede
+    // Gestione navigazione tab
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -134,7 +144,7 @@
       btn.classList.remove('text-slate-300');
     }
 
-    // Funzione di lettura flessibile (indifferente a maiuscole, minuscole e spazi)
+    // Lettura flessibile delle celle
     function leggiValore(riga, ...nomiPossibili) {
       if (!riga) return '';
       const chiavi = Object.keys(riga);
@@ -147,140 +157,20 @@
       return '';
     }
 
-    // Caricamento Dati dal Backoffice
+    // Caricamento dati da Google Sheets
     function caricaDatiDaGoogle() {
       // 1. CARICAMENTO EDITORIALE
       Papa.parse(urlEditoriale, {
         download: true,
         header: true,
-        skipEmptyLines: true,
+        skipEmptyLines: 'greedy',
         complete: function(results) {
           const loader = document.getElementById('loader-editoriale');
           const contenuto = document.getElementById('contenuto-editoriale');
 
           if (results.data && results.data.length > 0) {
             const riga = results.data[0];
-            const valori = Object.values(riga).filter(v => v && v.trim() !== '');
+            const valori = Object.values(riga).filter(v => v !== undefined && v !== null && v.trim() !== '');
 
-            // Cerca prima per nome colonna, altrimenti usa l'ordine di posizione (colonna 1, 2, 3)
             const titolo = leggiValore(riga, 'titolo', 'title') || valori[0] || 'Nuovo Editoriale';
-            const p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo', 'testo1') || valori[1] || '';
-            const p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2', 'testo2') || valori[2] || '';
-
-            document.getElementById('editoriale-titolo').textContent = titolo;
-            document.getElementById('editoriale-p1').textContent = p1;
-            document.getElementById('editoriale-p2').textContent = p2;
-
-            loader.classList.add('hidden');
-            contenuto.classList.remove('hidden');
-          } else {
-            loader.innerHTML = "<p class='text-amber-400 text-sm'>Il foglio Editoriale sembra vuoto. Aggiungi testo alla riga 2 del tuo Google Sheet.</p>";
-          }
-        },
-        error: function(err) {
-          document.getElementById('loader-editoriale').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Controlla la pubblicazione web del foglio.</p>";
-        }
-      });
-
-      // 2. CARICAMENTO RASSEGNA STAMPA
-      Papa.parse(urlNews, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          const grid = document.getElementById('news-grid');
-          const loader = document.getElementById('loader-news');
-          grid.innerHTML = '';
-
-          if (results.data && results.data.length > 0) {
-            results.data.forEach(riga => {
-              const valori = Object.values(riga).filter(v => v && v.trim() !== '');
-              if (valori.length === 0) return;
-
-              const titolo = leggiValore(riga, 'titolo', 'title') || valori[0];
-              const fonte = leggiValore(riga, 'fonte', 'source') || valori[1] || 'News';
-              const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
-              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
-              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
-
-              if (!titolo) return;
-
-              const card = document.createElement('article');
-              card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
-              card.innerHTML = `
-                <div>
-                  <div class="flex justify-between items-center text-xs mb-3">
-                    <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
-                    <span class="text-slate-500">${tempo}</span>
-                  </div>
-                  <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
-                  <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
-                </div>
-                <div class="pt-3 border-t border-slate-800/60">
-                  <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-                    Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
-                  </a>
-                </div>
-              `;
-              grid.appendChild(card);
-            });
-
-            loader.classList.add('hidden');
-            grid.classList.remove('hidden');
-          } else {
-            loader.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio.</p>";
-          }
-        },
-        error: function(err) {
-          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Controlla la pubblicazione del foglio News.</p>";
-        }
-      });
-    }
-
-    // Dati Storici (Fissi)
-    const datiStorici = [
-      { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
-      { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
-      { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
-      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" },
-      { anno: "2024", titolo: "La Seconda Stella", categoria: "Scudetto", dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024" }
-    ];
-
-    function renderHistory(items) {
-      const container = document.getElementById('history-container');
-      const noResults = document.getElementById('no-results');
-      container.innerHTML = '';
-      if (items.length === 0) { noResults.classList.remove('hidden'); return; }
-      noResults.classList.add('hidden');
-      items.forEach(item => {
-        container.innerHTML += `
-          <div class="bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between">
-            <div>
-              <div class="flex justify-between items-baseline mb-2">
-                <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
-                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
-              </div>
-              <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
-              <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/60">
-              <a href="${item.link}" target="_blank" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
-                Approfondisci su Wikipedia <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
-              </a>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function filtraStoria() {
-      const q = document.getElementById('historySearch').value.toLowerCase();
-      renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
-    }
-
-    // Avvio
-    renderHistory(datiStorici);
-    caricaDatiDaGoogle();
-  </script>
-</body>
-</html>
+            const p1 = leggiValore(r
