@@ -6,6 +6,9 @@
   
   <title>Spazio Nerazzurro | Ultime Notizie, Editoriale Quotidiano e Storia dell'Inter</title>
 
+  <!-- Favicon Nerazzurra SVG incorporata -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
+
   <!-- Meta Tag SEO -->
   <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite e classifica Serie A.">
   <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter">
@@ -34,13 +37,13 @@
     .bg-inter-card { background-color: #0b1a30; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-yellow-500 selection:text-slate-950">
 
   <!-- Header -->
   <header class="bg-inter-blue border-b border-blue-900 sticky top-0 z-50 shadow-lg">
     <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-blue-600 border-2 border-yellow-500 flex items-center justify-center font-black text-white text-lg tracking-wider">
+        <div class="w-10 h-10 rounded-full bg-blue-600 border-2 border-yellow-500 flex items-center justify-center font-black text-white text-lg tracking-wider shadow">
           IM
         </div>
         <div>
@@ -90,9 +93,18 @@
           <span id="data-editoriale-attivo"></span>
         </div>
         
-        <div id="loader-editoriale" class="py-10 text-center text-slate-400">
-          <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
-          <p class="text-sm">Caricamento editoriale in corso...</p>
+        <!-- Skeleton Loader Editoriale -->
+        <div id="loader-editoriale" class="space-y-4 py-2 animate-pulse">
+          <div class="h-8 bg-slate-800/80 rounded-lg w-3/4"></div>
+          <div class="space-y-2.5 pt-2">
+            <div class="h-4 bg-slate-800/60 rounded w-full"></div>
+            <div class="h-4 bg-slate-800/60 rounded w-11/12"></div>
+            <div class="h-4 bg-slate-800/60 rounded w-4/5"></div>
+          </div>
+          <div class="space-y-2.5 pt-2">
+            <div class="h-4 bg-slate-800/50 rounded w-full"></div>
+            <div class="h-4 bg-slate-800/50 rounded w-5/6"></div>
+          </div>
         </div>
 
         <div id="contenuto-editoriale" class="hidden">
@@ -101,9 +113,27 @@
             <p id="editoriale-p1"></p>
             <p id="editoriale-p2"></p>
           </div>
+
+          <!-- Pulsanti di Condivisione Rapida -->
+          <div class="mt-8 pt-5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+            <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+              <i class="fa-solid fa-share-nodes text-yellow-500"></i> Condividi editoriale:
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="condividiWhatsApp()" class="inline-flex items-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95">
+                <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+              </button>
+              <button onclick="condividiTelegram()" class="inline-flex items-center gap-1.5 bg-sky-600/20 hover:bg-sky-600/30 text-sky-400 border border-sky-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95">
+                <i class="fa-brands fa-telegram text-sm"></i> Telegram
+              </button>
+              <button onclick="copiaLink()" id="btn-copia" class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition active:scale-95">
+                <i class="fa-solid fa-link text-sm"></i> <span id="btn-copia-txt">Copia link</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <div class="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>A cura della Redazione</span>
           <span>Spazio libero da pubblicità</span>
         </div>
@@ -128,9 +158,26 @@
         </div>
       </div>
       
-      <div id="loader-news" class="col-span-full py-10 text-center text-slate-400">
-        <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
-        <p class="text-sm">Recupero notizie dal server in corso...</p>
+      <!-- Skeleton Loader Notizie -->
+      <div id="loader-news" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3">
+          <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
+          <div class="h-5 bg-slate-800 rounded w-4/5"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-full"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
+        </div>
+        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3 hidden md:block">
+          <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
+          <div class="h-5 bg-slate-800 rounded w-4/5"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-full"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
+        </div>
+        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3 hidden lg:block">
+          <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
+          <div class="h-5 bg-slate-800 rounded w-4/5"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-full"></div>
+          <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid"></div>
@@ -159,9 +206,12 @@
         </div>
 
         <div class="bg-inter-card border border-blue-900/40 rounded-xl overflow-hidden shadow">
-          <div id="loader-classifica" class="py-8 text-center text-slate-400">
-            <i class="fa-solid fa-spinner fa-spin text-xl text-yellow-500 mb-2"></i>
-            <p class="text-xs">Caricamento classifica in corso...</p>
+          <!-- Skeleton Loader Classifica -->
+          <div id="loader-classifica" class="p-6 space-y-3 animate-pulse">
+            <div class="h-4 bg-slate-800/80 rounded w-full"></div>
+            <div class="h-4 bg-slate-800/60 rounded w-full"></div>
+            <div class="h-4 bg-slate-800/50 rounded w-full"></div>
+            <div class="h-4 bg-slate-800/40 rounded w-full"></div>
           </div>
 
           <div class="overflow-x-auto">
@@ -221,14 +271,16 @@
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
 
     let listaEditoriali = [];
+    let notizieSalvate = [];
 
-    // Partite base di fallback
+    // Partite base
     let prossimePartite = [
       { competizione: "Serie A", avversario: "Atalanta", luogo: "Gewiss Stadium (Bergamo)", data: "Domenica 22 Nov", orario: "18:00" },
       { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro", data: "Mercoledì 25 Nov", orario: "21:00" },
       { competizione: "Serie A", avversario: "Fiorentina", luogo: "Stadio Artemio Franchi", data: "Domenica 29 Nov", orario: "20:45" }
     ];
 
+    // Navigazione
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -241,6 +293,22 @@
       if (btn) {
         btn.classList.add('bg-blue-700', 'text-white', 'shadow');
         btn.classList.remove('text-slate-300');
+      }
+    }
+
+    // Gestione Cache Locale (localStorage)
+    function salvaInCache(chiave, dati) {
+      try {
+        localStorage.setItem('sn_' + chiave, JSON.stringify(dati));
+      } catch (e) {}
+    }
+
+    function leggiDaCache(chiave) {
+      try {
+        const item = localStorage.getItem('sn_' + chiave);
+        return item ? JSON.parse(item) : null;
+      } catch (e) {
+        return null;
       }
     }
 
@@ -266,7 +334,7 @@
 
     function fetchSicuro(url) {
       const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), 5000);
+      const id = setTimeout(() => controller.abort(), 6000);
       const urlAntiCache = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
       return fetch(urlAntiCache, { signal: controller.signal })
         .then(res => {
@@ -274,6 +342,36 @@
           if (!res.ok) throw new Error("HTTP " + res.status);
           return res.text();
         });
+    }
+
+    // Condivisione Rapida
+    function getShareText() {
+      const ed = listaEditoriali[0] || {};
+      const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
+      return encodeURIComponent(`"${titolo}" - Leggi l'editoriale su Spazio Nerazzurro: ` + window.location.href);
+    }
+
+    function condividiWhatsApp() {
+      window.open(`https://api.whatsapp.com/send?text=${getShareText()}`, '_blank');
+    }
+
+    function condividiTelegram() {
+      const ed = listaEditoriali[0] || {};
+      const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
+      const url = encodeURIComponent(window.location.href);
+      window.open(`https://t.me/share/url?url=${url}&text=${titolo}`, '_blank');
+    }
+
+    function copiaLink() {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const txt = document.getElementById('btn-copia-txt');
+          if (txt) {
+            txt.textContent = "Copiato!";
+            setTimeout(() => { txt.textContent = "Copia link"; }, 2000);
+          }
+        });
+      }
     }
 
     function mostraEditoriale(indice) {
@@ -343,7 +441,39 @@
       }
     }
 
-    // Regola Casa / Trasferta
+    function renderNotizie(notizie) {
+      const gridNews = document.getElementById('news-grid');
+      const loaderNews = document.getElementById('loader-news');
+      if (!gridNews) return;
+      gridNews.innerHTML = '';
+
+      if (notizie && notizie.length > 0) {
+        notizie.forEach(r => {
+          const card = document.createElement('article');
+          card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center text-xs mb-3">
+                <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${r.fonte}</span>
+                <span class="text-slate-500">${r.tempo}</span>
+              </div>
+              <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${r.titolo}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed mb-4">${r.riassunto}</p>
+            </div>
+            <div class="pt-3 border-t border-slate-800/60">
+              <a href="${r.link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+                Leggi l'articolo su ${r.fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+              </a>
+            </div>
+          `;
+          gridNews.appendChild(card);
+        });
+
+        if (loaderNews) loaderNews.classList.add('hidden');
+        gridNews.classList.remove('hidden');
+      }
+    }
+
     function renderPartite() {
       const partiteContainer = document.getElementById('partite-grid');
       if (!partiteContainer) return;
@@ -353,7 +483,6 @@
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
 
-        // SE San Siro, Meazza o Casa => INTER a sinistra. Qualsiasi altro stadio/città => INTER a destra
         const tLuogo = (p.luogo || '').toLowerCase();
         const isCasa = tLuogo.includes('san siro') || tLuogo.includes('meazza') || tLuogo.startsWith('casa');
 
@@ -426,7 +555,37 @@
       if (tabella) tabella.classList.remove('hidden');
     }
 
-    function caricaDatiDaGoogle() {
+    // Caricamento Immediato da Cache Locale
+    function caricaDaCacheLocale() {
+      const edCache = leggiDaCache('editoriale');
+      if (edCache && edCache.length > 0) {
+        listaEditoriali = edCache;
+        mostraEditoriale(0);
+        renderArchivioEditoriali();
+        document.getElementById('loader-editoriale')?.classList.add('hidden');
+        document.getElementById('contenuto-editoriale')?.classList.remove('hidden');
+      }
+
+      const newsCache = leggiDaCache('news');
+      if (newsCache && newsCache.length > 0) {
+        notizieSalvate = newsCache;
+        renderNotizie(newsCache);
+      }
+
+      const partiteCache = leggiDaCache('partite');
+      if (partiteCache && partiteCache.length > 0) {
+        prossimePartite = partiteCache;
+        renderPartite();
+      }
+
+      const classificaCache = leggiDaCache('classifica');
+      if (classificaCache && classificaCache.length > 0) {
+        renderTabellaClassifica(classificaCache);
+      }
+    }
+
+    // Sincronizzazione in Background con Google Sheets
+    function sincronizzaConGoogle() {
       const loaderEd = document.getElementById('loader-editoriale');
       const contenutoEd = document.getElementById('contenuto-editoriale');
       const loaderNews = document.getElementById('loader-news');
@@ -440,7 +599,7 @@
             header: true,
             skipEmptyLines: 'greedy',
             complete: function(results) {
-              listaEditoriali = [];
+              const freschi = [];
               if (results.data && results.data.length > 0) {
                 results.data.forEach((riga, idx) => {
                   if (!riga || typeof riga !== 'object') return;
@@ -462,26 +621,27 @@
                     data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
                   }
 
-                  if (titolo) listaEditoriali.push({ data, titolo, p1, p2 });
+                  if (titolo) freschi.push({ data, titolo, p1, p2 });
                 });
               }
 
-              if (loaderEd) loaderEd.classList.add('hidden');
-              if (listaEditoriali.length > 0) {
+              if (freschi.length > 0) {
+                listaEditoriali = freschi;
+                salvaInCache('editoriale', freschi);
                 mostraEditoriale(0);
                 renderArchivioEditoriali();
+                if (loaderEd) loaderEd.classList.add('hidden');
                 if (contenutoEd) contenutoEd.classList.remove('hidden');
-              } else {
-                if (loaderEd) {
-                  loaderEd.classList.remove('hidden');
-                  loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun editoriale presente nel foglio Google.</p>";
-                }
+              } else if (listaEditoriali.length === 0 && loaderEd) {
+                loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun editoriale presente nel foglio Google.</p>";
               }
             }
           });
         })
         .catch(err => {
-          if (loaderEd) loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale. Verifica la pubblicazione web.</p>";
+          if (listaEditoriali.length === 0 && loaderEd) {
+            loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
+          }
         });
 
       // 2. ULTIME NOTIZIE
@@ -491,9 +651,7 @@
             header: true,
             skipEmptyLines: 'greedy',
             complete: function(results) {
-              if (gridNews) gridNews.innerHTML = '';
-              let notizieValide = 0;
-
+              const fresche = [];
               if (results.data && results.data.length > 0) {
                 results.data.forEach(riga => {
                   if (!riga || typeof riga !== 'object') return;
@@ -508,40 +666,24 @@
                   const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
                   const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
 
-                  const card = document.createElement('article');
-                  card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
-                  card.innerHTML = `
-                    <div>
-                      <div class="flex justify-between items-center text-xs mb-3">
-                        <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
-                        <span class="text-slate-500">${tempo}</span>
-                      </div>
-                      <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
-                      <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
-                    </div>
-                    <div class="pt-3 border-t border-slate-800/60">
-                      <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-                        Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
-                      </a>
-                    </div>
-                  `;
-                  if (gridNews) gridNews.appendChild(card);
-                  notizieValide++;
+                  fresche.push({ titolo, fonte, tempo, riassunto, link });
                 });
               }
 
-              if (loaderNews) loaderNews.classList.add('hidden');
-              if (notizieValide > 0 && gridNews) {
-                gridNews.classList.remove('hidden');
-              } else if (loaderNews) {
-                loaderNews.classList.remove('hidden');
+              if (fresche.length > 0) {
+                notizieSalvate = fresche;
+                salvaInCache('news', fresche);
+                renderNotizie(fresche);
+              } else if (notizieSalvate.length === 0 && loaderNews) {
                 loaderNews.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
               }
             }
           });
         })
         .catch(err => {
-          if (loaderNews) loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
+          if (notizieSalvate.length === 0 && loaderNews) {
+            loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
+          }
         });
 
       // 3. CLASSIFICA
@@ -599,19 +741,22 @@
                 }
 
                 if (righe.length > 0) {
+                  salvaInCache('classifica', righe);
                   renderTabellaClassifica(righe);
-                } else if (loaderClassifica) {
+                } else if (!leggiDaCache('classifica') && loaderClassifica) {
                   loaderClassifica.innerHTML = "<p class='text-amber-400 text-xs'>Dati classifica non trovati nel foglio.</p>";
                 }
               }
             });
           })
           .catch(err => {
-            if (loaderClassifica) loaderClassifica.innerHTML = "<p class='text-rose-400 text-xs'>Impossibile scaricare la classifica.</p>";
+            if (!leggiDaCache('classifica') && loaderClassifica) {
+              loaderClassifica.innerHTML = "<p class='text-rose-400 text-xs'>Impossibile scaricare la classifica.</p>";
+            }
           });
       }
 
-      // 4. PARTITE (Preserva intatte tutte le lettere dei nomi squadra)
+      // 4. PARTITE
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite)
           .then(csvText => {
@@ -634,7 +779,6 @@
                     let orar = leggiValore(r, 'orario', 'ora') || valori[4] || '20:45';
 
                     if (avv) {
-                      // Rimuove solo la parola intera Inter o VS e simboli iniziali/finali, lasciando integre tutte le lettere dei club
                       avv = avv.replace(/\binter\b/gi, '')
                                .replace(/\bvs\.?\b/gi, '')
                                .replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '')
@@ -648,6 +792,7 @@
 
                   if (partiteLette.length > 0) {
                     prossimePartite = partiteLette.slice(0, 3);
+                    salvaInCache('partite', prossimePartite);
                     renderPartite();
                   }
                 }
@@ -655,12 +800,12 @@
             });
           })
           .catch(err => {
-            console.warn("Utilizzo partite base precaricate:", err);
+            console.warn("Utilizzo partite precaricate:", err);
           });
       }
     }
 
-    // Archivio Storico
+    // Archivio Storico Fisso
     const datiStorici = [
       { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
       { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
@@ -705,10 +850,11 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio immediato
+    // Sequenza di avvio: prima carica la cache istantanea, poi sincronizza
     renderPartite();
     renderHistory(datiStorici);
-    caricaDatiDaGoogle();
+    caricaDaCacheLocale();
+    sincronizzaConGoogle();
   </script>
 </body>
 </html>
