@@ -121,7 +121,7 @@
     // I LINK PUBBLICI CSV DEL TUO FOGLIO GOOGLE
     // =========================================================================
     // Se l'editoriale era su una scheda specifica (es. gid diverso), mantieni il gid che funzionava
-    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
+    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1781565219&single=true&output=csv";
     
     // Il link delle News che hai inviato, convertito in formato CSV
     const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
@@ -173,4 +173,132 @@
             const valori = Object.values(riga).filter(v => v !== undefined && v !== null && v.trim() !== '');
 
             const titolo = leggiValore(riga, 'titolo', 'title') || valori[0] || 'Nuovo Editoriale';
-            const p1 = leggiValore(r
+            const p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo', 'testo1') || valori[1] || '';
+            const p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2', 'testo2') || valori[2] || '';
+
+            document.getElementById('editoriale-titolo').textContent = titolo;
+            document.getElementById('editoriale-p1').textContent = p1;
+            document.getElementById('editoriale-p2').textContent = p2;
+
+            loader.classList.add('hidden');
+            contenuto.classList.remove('hidden');
+          } else {
+            loader.innerHTML = "<p class='text-amber-400 text-sm'>Il foglio Editoriale sembra vuoto.</p>";
+          }
+        },
+        error: function(err) {
+          document.getElementById('loader-editoriale').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
+        }
+      });
+
+      // 2. CARICAMENTO NEWS
+      Papa.parse(urlNews, {
+        download: true,
+        header: true,
+        skipEmptyLines: 'greedy',
+        complete: function(results) {
+          const grid = document.getElementById('news-grid');
+          const loader = document.getElementById('loader-news');
+          grid.innerHTML = '';
+
+          let notizieValide = 0;
+
+          if (results.data && results.data.length > 0) {
+            results.data.forEach(riga => {
+              const valori = Object.values(riga).filter(v => v !== undefined && v !== null && v.trim() !== '');
+              
+              const titolo = leggiValore(riga, 'titolo', 'title', 'notizia') || valori[0];
+              if (!titolo) return;
+
+              const fonte = leggiValore(riga, 'fonte', 'source', 'giornale') || valori[1] || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+
+              const card = document.createElement('article');
+              card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+              card.innerHTML = `
+                <div>
+                  <div class="flex justify-between items-center text-xs mb-3">
+                    <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
+                    <span class="text-slate-500">${tempo}</span>
+                  </div>
+                  <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
+                  <p class="text-sm text-slate-400 leading-relaxed mb-4">${riassunto}</p>
+                </div>
+                <div class="pt-3 border-t border-slate-800/60">
+                  <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+                    Leggi l'articolo su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+                  </a>
+                </div>
+              `;
+              grid.appendChild(card);
+              notizieValide++;
+            });
+
+            if (notizieValide > 0) {
+              loader.classList.add('hidden');
+              grid.classList.remove('hidden');
+            } else {
+              loader.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
+            }
+          } else {
+            loader.innerHTML = "<p class='text-slate-400 text-sm'>Il foglio News sembra vuoto.</p>";
+          }
+        },
+        error: function(err) {
+          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Verifica la pubblicazione.</p>";
+        }
+      });
+    }
+
+    // Archivio Storico
+    const datiStorici = [
+      { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
+      { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
+      { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
+      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" },
+      { anno: "2024", titolo: "La Seconda Stella", categoria: "Scudetto", dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024" }
+    ];
+
+    function renderHistory(items) {
+      const container = document.getElementById('history-container');
+      const noResults = document.getElementById('no-results');
+      container.innerHTML = '';
+      if (items.length === 0) { 
+        noResults.classList.remove('hidden'); 
+        return; 
+      }
+      noResults.classList.add('hidden');
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-baseline mb-2">
+                <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
+                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/60">
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
+                Approfondisci su Wikipedia <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filtraStoria() {
+      const q = document.getElementById('historySearch').value.toLowerCase();
+      renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
+    }
+
+    // Avvio iniziale
+    renderHistory(datiStorici);
+    caricaDatiDaGoogle();
+  </script>
+</body>
+</html>
