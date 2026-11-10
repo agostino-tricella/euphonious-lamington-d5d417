@@ -6,6 +6,8 @@
   <title>Spazio Nerazzurro | News, Editoriale e Archivio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Libreria per leggere i dati da Google Sheets -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     .bg-inter-blue { background-color: #00133e; }
     .bg-inter-card { background-color: #0b1a30; }
@@ -26,7 +28,6 @@
         </div>
       </div>
 
-      <!-- Navigazione Sezioni -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
         <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
@@ -41,7 +42,6 @@
     </div>
   </header>
 
-  <!-- Contenitore Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
     <!-- SEZIONE 1: EDITORIALE -->
@@ -53,24 +53,22 @@
           <span id="data-odierna"></span>
         </div>
         
-        <!-- TITOLO EDITORIALE -->
-        <h2 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
-          La gestione della rosa e il carattere nei momenti decisivi
-        </h2>
-        
-        <!-- TESTO EDITORIALE -->
-        <div id="editoriale-testo" class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
-          <p>
-            In questa fase della stagione la continuità di rendimento dipende dalla lucidità mentale e dalla profondità dell'organico. Saper alternare le forze senza perdere identità tattica è il vero segno di maturità della squadra.
-          </p>
-          <p>
-            I prossimi impegni impongono determinazione e attenzione ai dettagli: ogni singolo punto in campionato e ogni passaggio del turno europeo si costruiscono sulla solidità difensiva e sul cinismo sotto porta.
-          </p>
+        <div id="loader-editoriale" class="py-10 text-center text-slate-400">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
+          <p class="text-sm">Caricamento editoriale in corso...</p>
+        </div>
+
+        <div id="contenuto-editoriale" class="hidden">
+          <h2 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h2>
+          <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
+            <p id="editoriale-p1"></p>
+            <p id="editoriale-p2"></p>
+          </div>
         </div>
 
         <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>A cura della Redazione</span>
-          <span>Aggiornato ogni giorno</span>
+          <span>Aggiornato via Backoffice</span>
         </div>
       </div>
     </section>
@@ -80,16 +78,21 @@
       <div class="mb-6 flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold">Rassegna Stampa & Notizie</h2>
-          <p class="text-sm text-slate-400">Gli articoli più rilevanti selezionati dal web con riferimento diretto alla fonte.</p>
+          <p class="text-sm text-slate-400">Gli articoli più rilevanti caricati dalla redazione.</p>
         </div>
       </div>
+      
+      <div id="loader-news" class="col-span-full py-10 text-center text-slate-400">
+        <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
+        <p class="text-sm">Recupero notizie dal server in corso...</p>
+      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="news-grid">
-        <!-- Generato dallo script -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid">
+        <!-- Generato dal Foglio Google -->
       </div>
     </section>
 
-    <!-- SEZIONE 3: ARCHIVIO STORICO -->
+    <!-- SEZIONE 3: ARCHIVIO STORICO (Fisso) -->
     <section id="section-storia" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -99,134 +102,151 @@
         <div class="relative w-full md:w-80">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-sm"></i>
           <input 
-            type="text" 
-            id="historySearch" 
-            placeholder="Cerca (es. 2010, Triplete, Herrera)..." 
-            oninput="filtraStoria()"
+            type="text" id="historySearch" placeholder="Cerca (es. 2010, Triplete)..." oninput="filtraStoria()"
             class="w-full bg-slate-900 border border-blue-900/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition"
           >
         </div>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="history-container">
-        <!-- Generato dallo script -->
-      </div>
-      <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun momento storico corrisponde alla ricerca.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="history-container"></div>
+      <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun evento corrisponde alla ricerca.</p>
     </section>
 
   </main>
 
   <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-    <p>Spazio libero dedicato all'Inter. Nessun cookie di tracciamento o banner pubblicitario.</p>
+    <p>Spazio libero dedicato all'Inter. Nessun cookie di tracciamento.</p>
   </footer>
 
   <script>
-    // ==========================================
-    // 1. LE NOTIZIE DEL GIORNO (Modificale qui)
-    // ==========================================
-    const rassegnaStampa = [
-      {
-        titolo: "Report da Appiano Gentile: il programma di allenamento e le condizioni del gruppo",
-        fonte: "FCInterNews",
-        tempo: "Oggi",
-        riassunto: "Seduta mattutina incentrata su tattica e scarico atletico in vista del prossimo impegno ufficiale.",
-        link: "https://www.fcinternews.it/"
-      },
-      {
-        titolo: "Focus tattico sui movimenti offensivi e la rotazione dei centrocampisti",
-        fonte: "Gazzetta dello Sport",
-        tempo: "Oggi",
-        riassunto: "Analisi dettagliata sulla manovra nerazzurra: come gli inserimenti senza palla creano spazi contro le difese schierate.",
-        link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
-      },
-      {
-        titolo: "Intervista esclusiva: concentrazione e solidità per la volata stagionale",
-        fonte: "Sky Sport",
-        tempo: "Ieri",
-        riassunto: "Dichiarazioni rilasciate ai microfoni sul valore del collettivo e sull'importanza di mantenere alta la concentrazione.",
-        link: "https://sport.sky.it/calcio/squadre/inter/news"
-      },
-      {
-        titolo: "I numeri della difesa: solidità casalinga e primato nel recupero palla",
-        fonte: "Corriere dello Sport",
-        tempo: "Ieri",
-        riassunto: "Le statistiche confermano l'efficacia del pressing alto e l'organizzazione della linea arretrata.",
-        link: "https://www.corrieredellosport.it/calcio/squadre/inter"
-      }
-    ];
+    // =========================================================================
+    // INSERISCI QUI I DUE LINK CSV CHE HAI COPIATO DA GOOGLE SHEETS
+    // =========================================================================
+    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQxqwu5E5IYh1608LxJfIv9uZFys9mAANWQDj8czHfSXAkjY4yTMQ7-aOgEkk_NkrLSVT_UkAyGZ17y/pub?gid=1781565219&single=true&output=csv
+";
+    const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQxqwu5E5IYh1608LxJfIv9uZFys9mAANWQDj8czHfSXAkjY4yTMQ7-aOgEkk_NkrLSVT_UkAyGZ17y/pub?gid=0&single=true&output=csv";
 
-    // ==========================================
-    // 2. ARCHIVIO STORICO
-    // ==========================================
-    const datiStorici = [
-      {
-        anno: "1908",
-        titolo: "La Fondazione: Fratelli del Mondo",
-        categoria: "Origini",
-        dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.",
-        link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano"
-      },
-      {
-        anno: "1964 - 1965",
-        titolo: "La Grande Inter di Helenio Herrera",
-        categoria: "Era Herrera",
-        dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.",
-        link: "https://it.wikipedia.org/wiki/Grande_Inter"
-      },
-      {
-        anno: "1998",
-        titolo: "La Coppa UEFA a Parigi",
-        categoria: "Europa",
-        dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.",
-        link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998"
-      },
-      {
-        anno: "2010",
-        titolo: "Il Triplete Leggendario",
-        categoria: "Trionfo",
-        dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.",
-        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010"
-      },
-      {
-        anno: "2024",
-        titolo: "La Seconda Stella",
-        categoria: "Scudetto",
-        dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.",
-        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024"
-      }
-    ];
+    // Data Odierna
+    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    // Imposta data odierna
-    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { 
-      day: 'numeric', month: 'long', year: 'numeric' 
-    });
-
-    // Funzione cambio schede
+    // Cambio Schede
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('bg-blue-700', 'text-white', 'shadow');
         btn.classList.add('text-slate-300');
       });
-
-      const target = document.getElementById('section-' + tabId);
+      document.getElementById('section-' + tabId).classList.remove('hidden');
       const btn = document.getElementById('tab-' + tabId);
-      if (target) target.classList.remove('hidden');
-      if (btn) {
-        btn.classList.add('bg-blue-700', 'text-white', 'shadow');
-        btn.classList.remove('text-slate-300');
+      btn.classList.add('bg-blue-700', 'text-white', 'shadow');
+      btn.classList.remove('text-slate-300');
+    }
+
+    // Caricamento Dati dal Backoffice (Fogli Google)
+    function caricaDatiDaGoogle() {
+      // 1. Carica Editoriale
+      if(urlEditoriale.includes("http")) {
+        Papa.parse(urlEditoriale, {
+          download: true,
+          header: true,
+          complete: function(results) {
+            const data = results.data[0]; // Prende la prima riga
+            if(data && data.Titolo) {
+              document.getElementById('editoriale-titolo').textContent = data.Titolo;
+              document.getElementById('editoriale-p1').textContent = data.Paragrafo1 || '';
+              document.getElementById('editoriale-p2').textContent = data.Paragrafo2 || '';
+              document.getElementById('loader-editoriale').classList.add('hidden');
+              document.getElementById('contenuto-editoriale').classList.remove('hidden');
+            }
+          }
+        });
+      } else {
+        document.getElementById('loader-editoriale').innerHTML = "<p class='text-red-400'>Inserisci il link del CSV dell'Editoriale nel codice.</p>";
+      }
+
+      // 2. Carica News
+      if(urlNews.includes("http")) {
+        Papa.parse(urlNews, {
+          download: true,
+          header: true,
+          complete: function(results) {
+            const grid = document.getElementById('news-grid');
+            grid.innerHTML = '';
+            
+            results.data.forEach(art => {
+              if(!art.Titolo) return; // Salta le righe vuote del foglio Excel
+              
+              const card = document.createElement('article');
+              card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+              card.innerHTML = `
+                <div>
+                  <div class="flex justify-between items-center text-xs mb-3">
+                    <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${art.Fonte || 'News'}</span>
+                    <span class="text-slate-500">${art.Tempo || 'Oggi'}</span>
+                  </div>
+                  <h3 class="font-bold text-base text-white mb-2 leading-snug group-hover:text-yellow-400 transition">${art.Titolo}</h3>
+                  <p class="text-sm text-slate-400 leading-relaxed mb-4">${art.Riassunto || ''}</p>
+                </div>
+                <div class="pt-3 border-t border-slate-800/60">
+                  <a href="${art.Link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+                    Leggi l'articolo originale su ${art.Fonte || ''} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+                  </a>
+                </div>
+              `;
+              grid.appendChild(card);
+            });
+            document.getElementById('loader-news').classList.add('hidden');
+            grid.classList.remove('hidden');
+          }
+        });
+      } else {
+        document.getElementById('loader-news').innerHTML = "<p class='text-red-400'>Inserisci il link del CSV delle News nel codice.</p>";
       }
     }
 
-    // Costruisce la sezione news
-    function renderNews() {
-      const container = document.getElementById('news-grid');
+    // Dati Storici (Fissi)
+    const datiStorici = [
+      { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
+      { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
+      { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
+      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" },
+      { anno: "2024", titolo: "La Seconda Stella", categoria: "Scudetto", dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024" }
+    ];
+
+    function renderHistory(items) {
+      const container = document.getElementById('history-container');
+      const noResults = document.getElementById('no-results');
       container.innerHTML = '';
-      
-      rassegnaStampa.forEach(art => {
-        const card = document.createElement('article');
-        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
-        card.innerHTML = `
-          <div>
-            <div class="flex justify-between items-center text-xs mb-3">
-              <span class="bg-blue-950 text-yellow
+      if (items.length === 0) { noResults.classList.remove('hidden'); return; }
+      noResults.classList.add('hidden');
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-baseline mb-2">
+                <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
+                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/60">
+              <a href="${item.link}" target="_blank" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
+                Approfondisci su Wikipedia <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filtraStoria() {
+      const q = document.getElementById('historySearch').value.toLowerCase();
+      renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
+    }
+
+    // Avvio al caricamento
+    renderHistory(datiStorici);
+    caricaDatiDaGoogle();
+  </script>
+</body>
+</html>
