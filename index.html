@@ -26,7 +26,7 @@
         </div>
       </div>
 
-      <!-- Navigazione Sezioni (Ora con link nativi) -->
+      <!-- Navigazione Sezioni -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
         <a href="#editoriale" onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
@@ -68,14 +68,14 @@
       </div>
     </section>
 
-    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA -->
+    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA (XML Diretto) -->
     <section id="section-news" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-bold">Rassegna Stampa in Tempo Reale</h2>
           <p class="text-sm text-slate-400">Clicca sul titolo per leggere l'articolo completo sulla testata originale.</p>
         </div>
-        <button onclick="caricaNotizie(true)" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
+        <button onclick="caricaNotizie()" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
           <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> Aggiorna news
         </button>
       </div>
@@ -85,7 +85,7 @@
       </div>
     </section>
 
-    <!-- SEZIONE 3: ARCHIVIO STORICO CON LINK -->
+    <!-- SEZIONE 3: ARCHIVIO STORICO -->
     <section id="section-storia" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -119,18 +119,16 @@
       dataOdiernaEl.textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // 2. GESTIONE DEI LINK DEL MENU (TABS)
+    // 2. GESTIONE DELLA NAVIGAZIONE
     let notizieCaricate = false;
 
     function switchTab(tabId) {
-      // Nasconde tutto
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('bg-blue-700', 'text-white', 'shadow');
         btn.classList.add('text-slate-300');
       });
 
-      // Mostra la sezione scelta
       const activeSection = document.getElementById('section-' + tabId);
       const activeBtn = document.getElementById('tab-' + tabId);
       
@@ -140,13 +138,11 @@
         activeBtn.classList.remove('text-slate-300');
       }
 
-      // Se apriamo le news, carichiamole
       if (tabId === 'news' && !notizieCaricate) {
         caricaNotizie();
       }
     }
 
-    // Assicura che al caricamento della pagina si apra la sezione giusta (basata sull'URL)
     window.addEventListener('DOMContentLoaded', () => {
       let hash = window.location.hash.substring(1);
       if (hash !== 'editoriale' && hash !== 'news' && hash !== 'storia') {
@@ -155,27 +151,8 @@
       switchTab(hash);
     });
 
-    // 3. CARICAMENTO DELLE NOTIZIE (CON SISTEMA ANTI-BLOCCO)
-    const notizieDiRiserva = [
-      {
-        titolo: "Le ultime notizie e gli aggiornamenti in diretta sull'Inter",
-        fonte: "Gazzetta dello Sport", data: "Oggi", link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
-      },
-      {
-        titolo: "Il punto tattico sulle prossime sfide dei nerazzurri",
-        fonte: "Sky Sport", data: "Oggi", link: "https://sport.sky.it/calcio/squadre/inter/news"
-      },
-      {
-        titolo: "Intervista esclusiva: le parole dai campi di Appiano Gentile",
-        fonte: "Corriere dello Sport", data: "Recente", link: "https://www.corrieredellosport.it/calcio/squadre/inter"
-      },
-      {
-        titolo: "Tutti gli aggiornamenti dal mondo Inter in tempo reale",
-        fonte: "FCInterNews", data: "Oggi", link: "https://www.fcinternews.it/"
-      }
-    ];
-
-    async function caricaNotizie(forzaAggiornamento = false) {
+    // 3. CARICAMENTO REALE DELLE NEWS SPECIFICHE (Tramite parser XML diretto)
+    async function caricaNotizie() {
       const grid = document.getElementById('news-grid');
       const refreshIcon = document.getElementById('refresh-icon');
       if (refreshIcon) refreshIcon.classList.add('fa-spin');
@@ -183,43 +160,74 @@
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center text-slate-400">
           <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
-          <p class="text-sm">Ricerca delle ultime notizie in corso...</p>
+          <p class="text-sm">Lettura delle ultime notizie in corso, recupero link specifici...</p>
         </div>
       `;
 
       try {
-        const rssTarget = encodeURIComponent('https://news.google.com/rss/search?q=Inter+calcio&hl=it&gl=IT&ceid=IT:it');
-        // Aggiunto un bypass per evitare la cache e i blocchi
-        const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssTarget}&t=${Date.now()}`);
+        // Link originale del feed Google News
+        const rssUrl = 'https://news.google.com/rss/search?q=Inter+calcio&hl=it&gl=IT&ceid=IT:it';
+        // Utilizzo un proxy open source gratuito per bypassare i blocchi del browser (CORS) e accedere all'XML puro
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
         
-        if (!res.ok) throw new Error("Network response was not ok");
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error("Errore di rete");
+        
         const data = await res.json();
+        
+        // Trasforma il testo puro nell'albero dei dati XML per poter leggere ogni singolo <link>
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+        const items = xmlDoc.querySelectorAll("item");
 
-        if (data.status === 'ok' && data.items && data.items.length > 0) {
+        if (items.length > 0) {
           grid.innerHTML = '';
           notizieCaricate = true;
+          let count = 0;
 
-          data.items.slice(0, 9).forEach(art => {
-            let titoloCompleto = art.title;
-            let fonte = "News";
-            if (titoloCompleto.includes(' - ')) {
-              const pezzi = titoloCompleto.split(' - ');
-              fonte = pezzi.pop();
-              titoloCompleto = pezzi.join(' - ');
+          items.forEach(art => {
+            if (count >= 9) return; // Mostra massimo 9 articoli
+
+            const titoloElem = art.querySelector("title");
+            const linkElem = art.querySelector("link");
+            const dataElem = art.querySelector("pubDate");
+            const sourceElem = art.querySelector("source");
+            
+            if (titoloElem && linkElem) {
+              let titolo = titoloElem.textContent;
+              const linkSpecifico = linkElem.textContent; // LINK REALE DELL'ARTICOLO
+              
+              let fonte = "Stampa";
+              if (sourceElem) {
+                fonte = sourceElem.textContent;
+              } else if (titolo.includes(' - ')) {
+                const pezzi = titolo.split(' - ');
+                fonte = pezzi.pop();
+                titolo = pezzi.join(' - ');
+              }
+
+              let dataPub = "Oggi";
+              if (dataElem) {
+                dataPub = new Date(dataElem.textContent).toLocaleDateString('it-IT', { 
+                  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+                });
+              }
+
+              creaCardNotizia(grid, fonte, dataPub, titolo, linkSpecifico);
+              count++;
             }
-            const dataPub = new Date(art.pubDate).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-            creaCardNotizia(grid, fonte, dataPub, titoloCompleto, art.link);
           });
         } else {
-          throw new Error('Nessun dato dal feed');
+          throw new Error('Nessun articolo trovato nel feed');
         }
       } catch (err) {
-        // SE L'API ESTERNA FALLISCE, CARICA I LINK FUNZIONANTI DI RISERVA
-        grid.innerHTML = '';
-        notizieDiRiserva.forEach(art => {
-          creaCardNotizia(grid, art.fonte, art.data, art.titolo, art.link);
-        });
-        notizieCaricate = true;
+        grid.innerHTML = `
+          <div class="col-span-full bg-slate-900 border border-slate-800 rounded-xl p-8 text-center text-slate-400">
+            <i class="fa-solid fa-triangle-exclamation text-yellow-500 text-2xl mb-2"></i>
+            <p class="text-sm mb-4">Non è stato possibile accedere al feed in questo momento.</p>
+            <button onclick="caricaNotizie()" class="px-4 py-2 bg-blue-700 text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition">Riprova</button>
+          </div>
+        `;
       } finally {
         if (refreshIcon) refreshIcon.classList.remove('fa-spin');
       }
@@ -238,14 +246,14 @@
         </div>
         <div class="pt-4 border-t border-slate-800/60 mt-3">
           <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
-            Leggi la notizia su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+            Leggi la notizia completa <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
           </a>
         </div>
       `;
       container.appendChild(card);
     }
 
-    // 4. ARCHIVIO STORICO (ORA CON I LINK ORIGINALI WIKIPEDIA E INTER.IT)
+    // 4. ARCHIVIO STORICO CON I LINK REALI
     const datiStorici = [
       {
         anno: "1908",
@@ -309,7 +317,7 @@
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800/60">
             <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
-              Approfondisci questo evento storico <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+              Apri l'approfondimento su Wikipedia / Inter.it <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
             </a>
           </div>
         `;
