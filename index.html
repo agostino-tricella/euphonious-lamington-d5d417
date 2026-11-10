@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spazio Nerazzurro | News, Editoriale e Storia</title>
+  <title>Spazio Nerazzurro | News, Editoriale e Archivio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     .bg-inter-blue { background-color: #00133e; }
     .bg-inter-card { background-color: #0b1a30; }
-    .text-inter-gold { color: #f59e0b; }
-    .border-inter-gold { border-color: #f59e0b; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
@@ -24,26 +22,26 @@
         </div>
         <div>
           <h1 class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></h1>
-          <p class="text-xs text-blue-300">100% Libero da pubblicità invasiva</p>
+          <p class="text-xs text-blue-300">100% Libero da pubblicità e banner invadenti</p>
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
-      <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm">
-        <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow">
+      <!-- Navigazione Sezioni (Ora con link nativi) -->
+      <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
+        <a href="#editoriale" onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
           <i class="fa-solid fa-pen-fancy mr-2"></i>Editoriale
-        </button>
-        <button onclick="switchTab('news')" id="tab-news" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white">
-          <i class="fa-solid fa-newspaper mr-2"></i>Rassegna Stampa
-        </button>
-        <button onclick="switchTab('storia')" id="tab-storia" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white">
+        </a>
+        <a href="#news" onclick="switchTab('news')" id="tab-news" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-newspaper mr-2"></i>Ultime News
+        </a>
+        <a href="#storia" onclick="switchTab('storia')" id="tab-storia" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-trophy mr-2"></i>Archivio Storico
-        </button>
+        </a>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content Container -->
+  <!-- Contenitore Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
     <!-- SEZIONE 1: EDITORIALE -->
@@ -52,189 +50,241 @@
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="flex items-center gap-3 text-xs font-semibold text-yellow-500 uppercase tracking-widest mb-3">
           <span class="bg-yellow-500/10 border border-yellow-500/30 px-2.5 py-1 rounded">Il Punto Quotidiano</span>
-          <span id="data-odierna">Oggi</span>
+          <span id="data-odierna"></span>
         </div>
+        
         <h2 class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight">
-          La gestione della rosa e il carattere da grande squadra
+          La gestione della rosa e il carattere nei momenti decisivi
         </h2>
+        
         <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
           <p>
-            In questo momento della stagione la differenza la fanno la lucidità e la profondità dell'organico. La capacità di mantenere alta l'intensità a prescindere dagli interpreti dimostra la maturità tattica acquisita dal gruppo nerazzurro.
+            In questa fase della stagione la continuità di rendimento dipende dalla lucidità mentale e dalla profondità dell'organico. Saper alternare le forze senza perdere identità tattica è il vero segno di maturità della squadra.
           </p>
           <p>
-            Le prossime sfide richiederanno compattezza e cinismo negli ultimi metri. Chiunque scenda in campo ha l'obbligo di mettere al centro l'identità del club: concretezza, ritmo e dedizione difensiva.
+            I prossimi impegni impongono determinazione e attenzione ai dettagli: ogni singolo punto in campionato e ogni passaggio del turno europeo si costruiscono sulla solidità difensiva e sul cinismo sotto porta.
           </p>
-        </div>
-        <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span>A cura della Redazione</span>
-          <span>Aggiornato ogni mattina alle 08:00</span>
         </div>
       </div>
     </section>
 
-    <!-- SEZIONE 2: RASSEGNA STAMPA PUBBLICA -->
+    <!-- SEZIONE 2: RASSEGNA STAMPA AUTOMATICA -->
     <section id="section-news" class="tab-content hidden">
-      <div class="mb-6 flex justify-between items-center">
+      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-bold">Rassegna Stampa & News</h2>
-          <p class="text-sm text-slate-400">Titoli aggregati dal web con riferimento diretto alla fonte originale.</p>
+          <h2 class="text-2xl font-bold">Rassegna Stampa in Tempo Reale</h2>
+          <p class="text-sm text-slate-400">Clicca sul titolo per leggere l'articolo completo sulla testata originale.</p>
         </div>
+        <button onclick="caricaNotizie(true)" class="inline-flex items-center gap-2 text-xs bg-slate-900 hover:bg-slate-800 border border-blue-900/60 px-3 py-2 rounded-lg text-slate-300 transition w-fit">
+          <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> Aggiorna news
+        </button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="news-grid">
-        <!-- Notizia 1 -->
-        <article class="bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-blue-500 transition shadow">
-          <div>
-            <div class="flex justify-between items-center text-xs mb-3">
-              <span class="bg-rose-950/80 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-medium">Gazzetta dello Sport</span>
-              <span class="text-slate-500">2 ore fa</span>
-            </div>
-            <h3 class="font-bold text-lg text-white mb-2 leading-snug">
-              Analisi tattica: i movimenti senza palla che aprono le difese chiuse
-            </h3>
-            <p class="text-sm text-slate-400 line-clamp-3 mb-4">
-              Focus dettagliato sui meccanismi offensivi nerazzurri e sulla rotazione dei centrocampisti negli inserimenti centrali.
-            </p>
-          </div>
-          <a href="https://www.gazzetta.it" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-semibold text-yellow-500 hover:text-yellow-400">
-            Leggi l'articolo originale <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
-          </a>
-        </article>
-
-        <!-- Notizia 2 -->
-        <article class="bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-blue-500 transition shadow">
-          <div>
-            <div class="flex justify-between items-center text-xs mb-3">
-              <span class="bg-blue-950/80 text-blue-300 border border-blue-800 px-2 py-0.5 rounded font-medium">Sky Sport</span>
-              <span class="text-slate-500">4 ore fa</span>
-            </div>
-            <h3 class="font-bold text-lg text-white mb-2 leading-snug">
-              Report da Appiano Gentile: le condizioni dell'infermeria verso la prossima gara
-            </h3>
-            <p class="text-sm text-slate-400 line-clamp-3 mb-4">
-              Sessione di scarico e lavoro personalizzato per il reparto arretrato in vista degli impegni ravvicinati.
-            </p>
-          </div>
-          <a href="https://sport.sky.it" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-semibold text-yellow-500 hover:text-yellow-400">
-            Leggi l'articolo originale <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
-          </a>
-        </article>
-
-        <!-- Notizia 3 -->
-        <article class="bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-blue-500 transition shadow">
-          <div>
-            <div class="flex justify-between items-center text-xs mb-3">
-              <span class="bg-amber-950/80 text-amber-300 border border-amber-800 px-2 py-0.5 rounded font-medium">Corriere dello Sport</span>
-              <span class="text-slate-500">Ieri</span>
-            </div>
-            <h3 class="font-bold text-lg text-white mb-2 leading-snug">
-              I numeri a confronto: rendimento casalingo e solidità difensiva
-            </h3>
-            <p class="text-sm text-slate-400 line-clamp-3 mb-4">
-              Le statistiche confermano San Siro come un autentico fortino nei big match europei e di campionato.
-            </p>
-          </div>
-          <a href="https://www.corrieredellosport.it" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-semibold text-yellow-500 hover:text-yellow-400">
-            Leggi l'articolo originale <i class="fa-solid fa-arrow-up-right-from-square ml-2 text-xs"></i>
-          </a>
-        </article>
+        <!-- Notizie caricate da JavaScript -->
       </div>
     </section>
 
-    <!-- SEZIONE 3: ARCHIVIO STORICO CON RICERCA -->
+    <!-- SEZIONE 3: ARCHIVIO STORICO CON LINK -->
     <section id="section-storia" class="tab-content hidden">
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold">Archivio Storico & Trofei</h2>
-          <p class="text-sm text-slate-400">Cerca per anno, trofeo, leggenda o momento memorabile.</p>
+          <p class="text-sm text-slate-400">Digita un anno, un trofeo o una leggenda per filtrare la storia del club.</p>
         </div>
-        <!-- Search Input -->
         <div class="relative w-full md:w-80">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-sm"></i>
           <input 
             type="text" 
             id="historySearch" 
-            placeholder="Cerca (es. 2010, Triplete, Meazza, Stella)..." 
-            oninput="filterHistory()"
+            placeholder="Cerca (es. 2010, Triplete, Herrera)..." 
+            oninput="filtraStoria()"
             class="w-full bg-slate-900 border border-blue-900/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition"
           >
         </div>
       </div>
 
-      <!-- History Items Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="history-container">
-        <!-- Rendered by JS -->
+        <!-- Popolato da JavaScript -->
       </div>
-      <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun evento trovato nell'archivio con questi termini.</p>
+      <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun momento storico corrisponde alla ricerca.</p>
     </section>
 
   </main>
 
-  <footer class="bg-slate-950 border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-    <p>Spazio autonomo nerazzurro. Nessun cookie di profilazione o banner pubblicitario.</p>
-  </footer>
-
   <script>
-    // Data Odierna
-    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { 
-      day: 'numeric', month: 'long', year: 'numeric' 
-    });
+    // 1. IMPOSTA LA DATA ODIERNA
+    const dataOdiernaEl = document.getElementById('data-odierna');
+    if (dataOdiernaEl) {
+      dataOdiernaEl.textContent = new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
-    // Gestione Tab
+    // 2. GESTIONE DEI LINK DEL MENU (TABS)
+    let notizieCaricate = false;
+
     function switchTab(tabId) {
+      // Nasconde tutto
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('bg-blue-700', 'text-white', 'shadow');
         btn.classList.add('text-slate-300');
       });
 
-      document.getElementById('section-' + tabId).classList.remove('hidden');
+      // Mostra la sezione scelta
+      const activeSection = document.getElementById('section-' + tabId);
       const activeBtn = document.getElementById('tab-' + tabId);
-      activeBtn.classList.add('bg-blue-700', 'text-white', 'shadow');
-      activeBtn.classList.remove('text-slate-300');
+      
+      if (activeSection) activeSection.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('bg-blue-700', 'text-white', 'shadow');
+        activeBtn.classList.remove('text-slate-300');
+      }
+
+      // Se apriamo le news, carichiamole
+      if (tabId === 'news' && !notizieCaricate) {
+        caricaNotizie();
+      }
     }
 
-    // Database Storico
-    const historyData = [
+    // Assicura che al caricamento della pagina si apra la sezione giusta (basata sull'URL)
+    window.addEventListener('DOMContentLoaded', () => {
+      let hash = window.location.hash.substring(1);
+      if (hash !== 'editoriale' && hash !== 'news' && hash !== 'storia') {
+        hash = 'editoriale';
+      }
+      switchTab(hash);
+    });
+
+    // 3. CARICAMENTO DELLE NOTIZIE (CON SISTEMA ANTI-BLOCCO)
+    const notizieDiRiserva = [
+      {
+        titolo: "Le ultime notizie e gli aggiornamenti in diretta sull'Inter",
+        fonte: "Gazzetta dello Sport", data: "Oggi", link: "https://www.gazzetta.it/Calcio/Squadre/Inter/"
+      },
+      {
+        titolo: "Il punto tattico sulle prossime sfide dei nerazzurri",
+        fonte: "Sky Sport", data: "Oggi", link: "https://sport.sky.it/calcio/squadre/inter/news"
+      },
+      {
+        titolo: "Intervista esclusiva: le parole dai campi di Appiano Gentile",
+        fonte: "Corriere dello Sport", data: "Recente", link: "https://www.corrieredellosport.it/calcio/squadre/inter"
+      },
+      {
+        titolo: "Tutti gli aggiornamenti dal mondo Inter in tempo reale",
+        fonte: "FCInterNews", data: "Oggi", link: "https://www.fcinternews.it/"
+      }
+    ];
+
+    async function caricaNotizie(forzaAggiornamento = false) {
+      const grid = document.getElementById('news-grid');
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
+      
+      grid.innerHTML = `
+        <div class="col-span-full py-16 text-center text-slate-400">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-yellow-500 mb-3"></i>
+          <p class="text-sm">Ricerca delle ultime notizie in corso...</p>
+        </div>
+      `;
+
+      try {
+        const rssTarget = encodeURIComponent('https://news.google.com/rss/search?q=Inter+calcio&hl=it&gl=IT&ceid=IT:it');
+        // Aggiunto un bypass per evitare la cache e i blocchi
+        const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssTarget}&t=${Date.now()}`);
+        
+        if (!res.ok) throw new Error("Network response was not ok");
+        const data = await res.json();
+
+        if (data.status === 'ok' && data.items && data.items.length > 0) {
+          grid.innerHTML = '';
+          notizieCaricate = true;
+
+          data.items.slice(0, 9).forEach(art => {
+            let titoloCompleto = art.title;
+            let fonte = "News";
+            if (titoloCompleto.includes(' - ')) {
+              const pezzi = titoloCompleto.split(' - ');
+              fonte = pezzi.pop();
+              titoloCompleto = pezzi.join(' - ');
+            }
+            const dataPub = new Date(art.pubDate).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            creaCardNotizia(grid, fonte, dataPub, titoloCompleto, art.link);
+          });
+        } else {
+          throw new Error('Nessun dato dal feed');
+        }
+      } catch (err) {
+        // SE L'API ESTERNA FALLISCE, CARICA I LINK FUNZIONANTI DI RISERVA
+        grid.innerHTML = '';
+        notizieDiRiserva.forEach(art => {
+          creaCardNotizia(grid, art.fonte, art.data, art.titolo, art.link);
+        });
+        notizieCaricate = true;
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+      }
+    }
+
+    function creaCardNotizia(container, fonte, dataPub, titolo, link) {
+      const card = document.createElement('article');
+      card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition shadow group";
+      card.innerHTML = `
+        <div>
+          <div class="flex justify-between items-center text-xs mb-3">
+            <span class="bg-blue-950 text-yellow-400 border border-blue-800/80 px-2 py-0.5 rounded font-semibold">${fonte}</span>
+            <span class="text-slate-500">${dataPub}</span>
+          </div>
+          <h3 class="font-bold text-base text-white mb-3 leading-snug group-hover:text-yellow-400 transition">${titolo}</h3>
+        </div>
+        <div class="pt-4 border-t border-slate-800/60 mt-3">
+          <a href="${link}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition w-full">
+            Leggi la notizia su ${fonte} <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-[10px]"></i>
+          </a>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+
+    // 4. ARCHIVIO STORICO (ORA CON I LINK ORIGINALI WIKIPEDIA E INTER.IT)
+    const datiStorici = [
       {
         anno: "1908",
         titolo: "La Fondazione: Fratelli del Mondo",
         categoria: "Origini",
-        dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan, con lo scopo di accogliere calciatori stranieri."
+        dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.",
+        link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano"
       },
       {
         anno: "1964 - 1965",
         titolo: "La Grande Inter di Helenio Herrera",
         categoria: "Era Herrera",
-        dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con leggende come Facchetti, Mazzola, Picchi, Suarez e Corso."
-      },
-      {
-        anno: "2010",
-        titolo: "Il Triplete Leggendario",
-        categoria: "Trionfo",
-        dettagli: "La conquista di Scudetto, Coppa Italia e Champions League nella storica notte di Madrid con doppietta di Diego Milito sotto la guida di José Mourinho."
-      },
-      {
-        anno: "2024",
-        titolo: "La Seconda Stella",
-        categoria: "Scudetto",
-        dettagli: "Il ventesimo scudetto nerazzurro conquistato matematicamente nel derby di Milano del 22 aprile 2024, cucendo sulla maglia la prestigiosa seconda stella."
+        dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago'.",
+        link: "https://it.wikipedia.org/wiki/Grande_Inter"
       },
       {
         anno: "1998",
         titolo: "La Coppa UEFA a Parigi",
         categoria: "Europa",
-        dettagli: "La finale perfetta vinta 3-0 contro la Lazio con le reti di Zamorano, Zanetti e la storica finta di Ronaldo il Fenomeno su Marchegiani."
+        dettagli: "Trionfo 3-0 contro la Lazio con le reti di Zamorano, Zanetti e la finta leggendaria di Ronaldo 'Il Fenomeno'.",
+        link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998"
       },
       {
-        anno: "1927 - 1940",
-        titolo: "L'Era di Giuseppe Meazza",
-        categoria: "Leggenda",
-        dettagli: "Il più grande attaccante della storia italiana guida l'Ambrosiana-Inter a tre scudetti e alla Coppa dell'Europa Centrale, stabilendo il record societario di 284 reti."
+        anno: "2010",
+        titolo: "Il Triplete Leggendario",
+        categoria: "Trionfo",
+        dettagli: "Scudetto, Coppa Italia e Champions League vinta nella storica notte del Santiago Bernabéu contro il Bayern Monaco.",
+        link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010"
+      },
+      {
+        anno: "2024",
+        titolo: "La Seconda Stella",
+        categoria: "Scudetto",
+        dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.",
+        link: "https://www.inter.it/it/notizie/inter-campione-d-italia-20-scudetto-seconda-stella"
       }
     ];
 
-    function renderHistory(items) {
+    function renderizzaStoria(items) {
       const container = document.getElementById('history-container');
       const noResults = document.getElementById('no-results');
       container.innerHTML = '';
@@ -247,32 +297,39 @@
 
       items.forEach(item => {
         const card = document.createElement('div');
-        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition";
+        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between";
         card.innerHTML = `
-          <div class="flex justify-between items-baseline mb-2">
-            <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
-            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
+          <div>
+            <div class="flex justify-between items-baseline mb-2">
+              <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
+              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
           </div>
-          <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
-          <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
+          <div class="mt-4 pt-3 border-t border-slate-800/60">
+            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
+              Approfondisci questo evento storico <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+            </a>
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function filterHistory() {
+    function filtraStoria() {
       const query = document.getElementById('historySearch').value.toLowerCase();
-      const filtered = historyData.filter(item => 
+      const filtrati = datiStorici.filter(item => 
         item.anno.toLowerCase().includes(query) ||
         item.titolo.toLowerCase().includes(query) ||
         item.categoria.toLowerCase().includes(query) ||
         item.dettagli.toLowerCase().includes(query)
       );
-      renderHistory(filtered);
+      renderizzaStoria(filtrati);
     }
 
-    // Inizializzazione archivio
-    renderHistory(historyData);
+    // Inizializza l'archivio al caricamento
+    renderizzaStoria(datiStorici);
   </script>
 </body>
 </html>
