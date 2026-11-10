@@ -45,13 +45,27 @@
   <!-- Contenitore Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
-    <!-- SEZIONE 1: EDITORIALE -->
+    <!-- SEZIONE 1: EDITORIALE & ARCHIVIO EDITORIALI -->
     <section id="section-editoriale" class="tab-content">
+      
+      <!-- Avviso quando si legge un vecchio editoriale -->
+      <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-yellow-400"></i>
+          Stai leggendo un editoriale passato (<b id="avviso-archivio-data"></b>)
+        </span>
+        <button onclick="mostraEditoriale(0)" class="underline hover:text-white font-bold ml-3">
+          Torna all'ultimo editoriale di oggi &rarr;
+        </button>
+      </div>
+
+      <!-- Scheda Editoriale Principale -->
       <div class="bg-inter-card border border-blue-900/50 rounded-2xl p-6 md:p-10 shadow-xl relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        
         <div class="flex items-center gap-3 text-xs font-semibold text-yellow-500 uppercase tracking-widest mb-3">
-          <span class="bg-yellow-500/10 border border-yellow-500/30 px-2.5 py-1 rounded">Il Punto Quotidiano</span>
-          <span id="data-odierna"></span>
+          <span class="bg-yellow-500/10 border border-yellow-500/30 px-2.5 py-1 rounded" id="etichetta-editoriale">Il Punto Quotidiano</span>
+          <span id="data-editoriale-attivo"></span>
         </div>
         
         <div id="loader-editoriale" class="py-10 text-center text-slate-400">
@@ -69,9 +83,23 @@
 
         <div class="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>A cura della Redazione</span>
-          <span>Aggiornato via Backoffice</span>
+          <span>Spazio libero da pubblicità</span>
         </div>
       </div>
+
+      <!-- Elenco Editoriali Precedenti -->
+      <div id="sezione-archivio-editoriali" class="mt-10 hidden">
+        <div class="mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-box-archive text-yellow-500 text-lg"></i>
+          <h3 class="text-xl font-bold text-white">Archivio Editoriali Precedenti</h3>
+        </div>
+        <p class="text-sm text-slate-400 mb-6">Recupera i punti di vista e le analisi pubblicate nei giorni scorsi.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="archivio-editoriali-grid">
+          <!-- Popolato via JS -->
+        </div>
+      </div>
+
     </section>
 
     <!-- SEZIONE 2: RASSEGNA STAMPA -->
@@ -79,7 +107,7 @@
       <div class="mb-6 flex justify-between items-center">
         <div>
           <h2 class="text-2xl font-bold">Rassegna Stampa & Notizie</h2>
-          <p class="text-sm text-slate-400">Gli articoli più rilevanti caricati dalla redazione.</p>
+          <p class="text-sm text-slate-400">Gli articoli più rilevanti caricati dalla redazione con link originale.</p>
         </div>
       </div>
       
@@ -117,21 +145,12 @@
   </footer>
 
   <script>
-    // =========================================================================
-    // I LINK PUBBLICI CSV DEL TUO FOGLIO GOOGLE
-    // =========================================================================
-    // Se l'editoriale era su una scheda specifica (es. gid diverso), mantieni il gid che funzionava
-    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1103162255&single=true&output=csv";
-    
-    // Il link delle News che hai inviato, convertito in formato CSV
+    const urlEditoriale = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1781565219&single=true&output=csv";
     const urlNews = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
 
-    // Data odierna
-    document.getElementById('data-odierna').textContent = new Date().toLocaleDateString('it-IT', { 
-      day: 'numeric', month: 'long', year: 'numeric' 
-    });
+    // Variabile per conservare tutti gli editoriali scaricati
+    let listaEditoriali = [];
 
-    // Gestione navigazione tab
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -144,7 +163,6 @@
       btn.classList.remove('text-slate-300');
     }
 
-    // Lettura flessibile delle celle
     function leggiValore(riga, ...nomiPossibili) {
       if (!riga) return '';
       const chiavi = Object.keys(riga);
@@ -157,9 +175,72 @@
       return '';
     }
 
-    // Caricamento dati da Google Sheets
+    // Mostra un editoriale specifico (indice 0 = l'ultimo, 1+ = archivio)
+    function mostraEditoriale(indice) {
+      if (!listaEditoriali[indice]) return;
+
+      const ed = listaEditoriali[indice];
+      document.getElementById('editoriale-titolo').textContent = ed.titolo;
+      document.getElementById('editoriale-p1').textContent = ed.p1;
+      document.getElementById('editoriale-p2').textContent = ed.p2;
+      document.getElementById('data-editoriale-attivo').textContent = ed.data;
+
+      const avviso = document.getElementById('avviso-archivio');
+      const etichetta = document.getElementById('etichetta-editoriale');
+
+      if (indice === 0) {
+        avviso.classList.add('hidden');
+        etichetta.textContent = "Il Punto Quotidiano";
+      } else {
+        avviso.classList.remove('hidden');
+        document.getElementById('avviso-archivio-data').textContent = ed.data;
+        etichetta.textContent = "Dall'Archivio";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Costruisce la griglia degli editoriali passati
+    function renderArchivioEditoriali() {
+      const container = document.getElementById('sezione-archivio-editoriali');
+      const grid = document.getElementById('archivio-editoriali-grid');
+      grid.innerHTML = '';
+
+      if (listaEditoriali.length <= 1) {
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+
+      // Mostra gli editoriali a partire dal secondo (indice 1 in poi)
+      for (let i = 1; i < listaEditoriali.length; i++) {
+        const ed = listaEditoriali[i];
+        const card = document.createElement('div');
+        card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 flex flex-col justify-between hover:border-yellow-500/50 transition cursor-pointer group";
+        card.onclick = () => mostraEditoriale(i);
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span class="text-yellow-400 font-semibold"><i class="fa-regular fa-calendar mr-1"></i> ${ed.data}</span>
+              <span class="text-slate-500 text-[11px] group-hover:text-yellow-400 transition">Leggi &rarr;</span>
+            </div>
+            <h4 class="font-bold text-white text-base leading-snug group-hover:text-yellow-400 transition mb-2">${ed.titolo}</h4>
+            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">${ed.p1}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/60">
+            <span class="text-xs font-semibold text-blue-400 group-hover:text-yellow-400 transition inline-flex items-center">
+              Rileggi questo pezzo <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+            </span>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    // Caricamento Dati
     function caricaDatiDaGoogle() {
-      // 1. CARICAMENTO EDITORIALE
+      // 1. EDITORIALE & ARCHIVIO
       Papa.parse(urlEditoriale, {
         download: true,
         header: true,
@@ -169,29 +250,48 @@
           const contenuto = document.getElementById('contenuto-editoriale');
 
           if (results.data && results.data.length > 0) {
-            const riga = results.data[0];
-            const valori = Object.values(riga).filter(v => v !== undefined && v !== null && v.trim() !== '');
+            listaEditoriali = [];
 
-            const titolo = leggiValore(riga, 'titolo', 'title') || valori[0] || 'Nuovo Editoriale';
-            const p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo', 'testo1') || valori[1] || '';
-            const p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2', 'testo2') || valori[2] || '';
+            results.data.forEach((riga, idx) => {
+              const valori = Object.values(riga).filter(v => v !== undefined && v !== null && v.trim() !== '');
+              if (valori.length === 0) return;
 
-            document.getElementById('editoriale-titolo').textContent = titolo;
-            document.getElementById('editoriale-p1').textContent = p1;
-            document.getElementById('editoriale-p2').textContent = p2;
+              let data = leggiValore(riga, 'data', 'giorno', 'date');
+              let titolo = leggiValore(riga, 'titolo', 'title');
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
 
-            loader.classList.add('hidden');
-            contenuto.classList.remove('hidden');
-          } else {
-            loader.innerHTML = "<p class='text-amber-400 text-sm'>Il foglio Editoriale sembra vuoto.</p>";
+              // Fallback per ordine colonne se le intestazioni non sono identiche
+              if (!titolo && !data) {
+                data = valori[0] || 'Data recente';
+                titolo = valori[1] || 'Editoriale';
+                p1 = valori[2] || '';
+                p2 = valori[3] || '';
+              } else if (!data) {
+                data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
+              }
+
+              if (titolo) {
+                listaEditoriali.push({ data, titolo, p1, p2 });
+              }
+            });
+
+            if (listaEditoriali.length > 0) {
+              mostraEditoriale(0);
+              renderArchivioEditoriali();
+              loader.classList.add('hidden');
+              contenuto.classList.remove('hidden');
+            } else {
+              loader.innerHTML = "<p class='text-amber-400 text-sm'>Nessun testo trovato nel foglio Editoriale.</p>";
+            }
           }
         },
-        error: function(err) {
+        error: function() {
           document.getElementById('loader-editoriale').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
         }
       });
 
-      // 2. CARICAMENTO NEWS
+      // 2. NEWS
       Papa.parse(urlNews, {
         download: true,
         header: true,
@@ -242,17 +342,15 @@
             } else {
               loader.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
             }
-          } else {
-            loader.innerHTML = "<p class='text-slate-400 text-sm'>Il foglio News sembra vuoto.</p>";
           }
         },
-        error: function(err) {
-          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie. Verifica la pubblicazione.</p>";
+        error: function() {
+          document.getElementById('loader-news').innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
         }
       });
     }
 
-    // Archivio Storico
+    // Archivio Storico Fai-da-te
     const datiStorici = [
       { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
       { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
@@ -296,7 +394,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Avvio iniziale
+    // Avvio
     renderHistory(datiStorici);
     caricaDatiDaGoogle();
   </script>
