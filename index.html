@@ -21,13 +21,6 @@
   <!-- Verifica Google Search Console -->
   <meta name="google-site-verification" content="Y_NGmcsTcRh2D-xqp5l-CftXyXIFZ3q8kS03vEKQWSk" />
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Spazio Nerazzurro | 100% Libero da Pubblicità">
-  <meta property="og:description" content="L'aggregatore indipendente fatto da un interista per gli interisti: editoriale quotidiano, ultime notizie, calendario e trofei.">
-  <meta property="og:locale" content="it_IT">
-  <meta property="og:site_name" content="Spazio Nerazzurro">
-
   <meta name="theme-color" content="#00133e">
 
   <!-- Librerie Esterne -->
@@ -38,6 +31,15 @@
   <style>
     .bg-inter-blue { background-color: #00133e; }
     .bg-inter-card { background-color: #0b1a30; }
+    /* Micro-Scudetto CSS */
+    .scudetto-icon {
+      display: flex;
+      width: 14px;
+      height: 18px;
+      border-radius: 0 0 6px 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-yellow-500 selection:text-slate-950">
@@ -76,7 +78,7 @@
   <!-- Contenuto Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
-    <!-- SEZIONE 1: EDITORIALE & ARCHIVIO EDITORIALI -->
+    <!-- SEZIONE 1: EDITORIALE & ARCHIVIO -->
     <section id="section-editoriale" class="tab-content">
       <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
         <span class="flex items-center gap-2">
@@ -96,7 +98,6 @@
           <span id="data-editoriale-attivo"></span>
         </div>
         
-        <!-- Skeleton Loader Editoriale -->
         <div id="loader-editoriale" class="space-y-4 py-2 animate-pulse">
           <div class="h-8 bg-slate-800/80 rounded-lg w-3/4"></div>
           <div class="space-y-2.5 pt-2">
@@ -117,7 +118,6 @@
             <p id="editoriale-p2"></p>
           </div>
 
-          <!-- Pulsanti di Condivisione Rapida -->
           <div class="mt-8 pt-5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
             <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <i class="fa-solid fa-share-nodes text-yellow-500"></i> Condividi editoriale:
@@ -147,7 +147,6 @@
           <i class="fa-solid fa-box-archive text-yellow-500 text-lg"></i>
           <h3 class="text-xl font-bold text-white">Archivio Editoriali Precedenti</h3>
         </div>
-        <p class="text-sm text-slate-400 mb-6">Recupera i punti di vista e le analisi pubblicate nei giorni scorsi.</p>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="archivio-editoriali-grid"></div>
       </div>
     </section>
@@ -161,21 +160,8 @@
         </div>
       </div>
       
-      <!-- Skeleton Loader Notizie -->
       <div id="loader-news" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
         <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3">
-          <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
-          <div class="h-5 bg-slate-800 rounded w-4/5"></div>
-          <div class="h-3 bg-slate-800/60 rounded w-full"></div>
-          <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
-        </div>
-        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3 hidden md:block">
-          <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
-          <div class="h-5 bg-slate-800 rounded w-4/5"></div>
-          <div class="h-3 bg-slate-800/60 rounded w-full"></div>
-          <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
-        </div>
-        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3 hidden lg:block">
           <div class="flex justify-between"><div class="h-4 bg-slate-800 rounded w-16"></div><div class="h-4 bg-slate-800 rounded w-12"></div></div>
           <div class="h-5 bg-slate-800 rounded w-4/5"></div>
           <div class="h-3 bg-slate-800/60 rounded w-full"></div>
@@ -209,7 +195,6 @@
         </div>
 
         <div class="bg-inter-card border border-blue-900/40 rounded-xl overflow-hidden shadow">
-          <!-- Skeleton Loader Classifica -->
           <div id="loader-classifica" class="p-6 space-y-3 animate-pulse">
             <div class="h-4 bg-slate-800/80 rounded w-full"></div>
             <div class="h-4 bg-slate-800/60 rounded w-full"></div>
@@ -238,12 +223,31 @@
       </div>
     </section>
 
-    <!-- SEZIONE 4: ARCHIVIO STORICO -->
+    <!-- SEZIONE 4: ARCHIVIO STORICO & SCUDETTI -->
     <section id="section-storia" class="tab-content hidden">
+      
+      <!-- L'Albo d'Oro dei 21 Scudetti -->
+      <div class="mb-14">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
+            <i class="fa-solid fa-star text-yellow-500"></i>
+            I 21 Scudetti
+            <i class="fa-solid fa-star text-yellow-500"></i>
+          </h2>
+          <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
+        </div>
+        
+        <!-- Griglia Scudetti: su PC 7 colonne per avere 3 righe perfette -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
+      </div>
+
+      <div class="w-full h-px bg-slate-800/80 my-8"></div>
+
+      <!-- Ricerca Eventi Storici -->
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 class="text-2xl font-bold">Archivio Storico & Trofei</h2>
-          <p class="text-sm text-slate-400">Digita un anno, un trofeo o una leggenda per filtrare la storia nerazzurra.</p>
+          <h2 class="text-2xl font-bold">Momenti Leggendari</h2>
+          <p class="text-sm text-slate-400">Cerca un anno, una coppa o una leggenda nella storia nerazzurra.</p>
         </div>
         <div class="relative w-full md:w-80">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400 text-sm"></i>
@@ -299,20 +303,15 @@
       }
     }
 
-    // Gestione Cache Locale (localStorage)
+    // Gestione Cache Locale
     function salvaInCache(chiave, dati) {
-      try {
-        localStorage.setItem('sn_' + chiave, JSON.stringify(dati));
-      } catch (e) {}
+      try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
-
     function leggiDaCache(chiave) {
       try {
         const item = localStorage.getItem('sn_' + chiave);
         return item ? JSON.parse(item) : null;
-      } catch (e) {
-        return null;
-      }
+      } catch (e) { return null; }
     }
 
     function pulisciTesto(val) {
@@ -353,18 +352,13 @@
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
       return encodeURIComponent(`"${titolo}" - Leggi l'editoriale su Spazio Nerazzurro: ` + window.location.href);
     }
-
-    function condividiWhatsApp() {
-      window.open(`https://api.whatsapp.com/send?text=${getShareText()}`, '_blank');
-    }
-
+    function condividiWhatsApp() { window.open(`https://api.whatsapp.com/send?text=${getShareText()}`, '_blank'); }
     function condividiTelegram() {
       const ed = listaEditoriali[0] || {};
       const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
       const url = encodeURIComponent(window.location.href);
       window.open(`https://t.me/share/url?url=${url}&text=${titolo}`, '_blank');
     }
-
     function copiaLink() {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href).then(() => {
@@ -407,16 +401,15 @@
     }
 
     function renderArchivioEditoriali() {
-      const container = document.getElementById('sezione-archivio-editoriali');
       const grid = document.getElementById('archivio-editoriali-grid');
-      if (!container || !grid) return;
+      const container = document.getElementById('sezione-archivio-editoriali');
+      if (!grid || !container) return;
       grid.innerHTML = '';
 
       if (listaEditoriali.length <= 1) {
         container.classList.add('hidden');
         return;
       }
-
       container.classList.remove('hidden');
 
       for (let i = 1; i < listaEditoriali.length; i++) {
@@ -471,7 +464,6 @@
           `;
           gridNews.appendChild(card);
         });
-
         if (loaderNews) loaderNews.classList.add('hidden');
         gridNews.classList.remove('hidden');
       }
@@ -485,13 +477,10 @@
       prossimePartite.forEach(p => {
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
-
         const tLuogo = (p.luogo || '').toLowerCase();
         const isCasa = tLuogo.includes('san siro') || tLuogo.includes('meazza') || tLuogo.startsWith('casa');
-
         const squadraCasa = isCasa ? 'INTER' : p.avversario;
         const squadraTrasferta = isCasa ? p.avversario : 'INTER';
-
         const stileCasa = isCasa ? 'text-white font-extrabold' : 'text-slate-300 font-bold';
         const stileTrasferta = isCasa ? 'text-slate-300 font-bold' : 'text-white font-extrabold';
 
@@ -528,10 +517,7 @@
         const isInter = r.squadra.toLowerCase().includes('inter');
         const posNum = parseInt(r.pos) || 0;
 
-        const rowClass = isInter 
-          ? "bg-blue-950/60 font-bold text-white border-l-4 border-yellow-500" 
-          : "hover:bg-slate-900/50 transition";
-
+        const rowClass = isInter ? "bg-blue-950/60 font-bold text-white border-l-4 border-yellow-500" : "hover:bg-slate-900/50 transition";
         let indicator = `<span class="text-slate-500 text-xs">${r.pos}</span>`;
         if (posNum > 0 && posNum <= 4) indicator = `<span class="text-blue-400 font-bold text-xs">${r.pos}</span>`;
         else if (posNum === 5) indicator = `<span class="text-amber-400 font-bold text-xs">${r.pos}</span>`;
@@ -558,7 +544,6 @@
       if (tabella) tabella.classList.remove('hidden');
     }
 
-    // Caricamento Immediato da Cache Locale
     function caricaDaCacheLocale() {
       const edCache = leggiDaCache('editoriale');
       if (edCache && edCache.length > 0) {
@@ -568,253 +553,218 @@
         document.getElementById('loader-editoriale')?.classList.add('hidden');
         document.getElementById('contenuto-editoriale')?.classList.remove('hidden');
       }
-
       const newsCache = leggiDaCache('news');
-      if (newsCache && newsCache.length > 0) {
-        notizieSalvate = newsCache;
-        renderNotizie(newsCache);
-      }
-
+      if (newsCache && newsCache.length > 0) { notizieSalvate = newsCache; renderNotizie(newsCache); }
       const partiteCache = leggiDaCache('partite');
-      if (partiteCache && partiteCache.length > 0) {
-        prossimePartite = partiteCache;
-        renderPartite();
-      }
-
+      if (partiteCache && partiteCache.length > 0) { prossimePartite = partiteCache; renderPartite(); }
       const classificaCache = leggiDaCache('classifica');
-      if (classificaCache && classificaCache.length > 0) {
-        renderTabellaClassifica(classificaCache);
-      }
+      if (classificaCache && classificaCache.length > 0) renderTabellaClassifica(classificaCache);
     }
 
-    // Sincronizzazione in Background con Google Sheets
     function sincronizzaConGoogle() {
-      const loaderEd = document.getElementById('loader-editoriale');
-      const contenutoEd = document.getElementById('contenuto-editoriale');
-      const loaderNews = document.getElementById('loader-news');
-      const gridNews = document.getElementById('news-grid');
-      const loaderClassifica = document.getElementById('loader-classifica');
-
       // 1. EDITORIALE
-      fetchSicuro(urlEditoriale)
-        .then(csvText => {
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: function(results) {
-              const freschi = [];
-              if (results.data && results.data.length > 0) {
-                results.data.forEach((riga, idx) => {
-                  if (!riga || typeof riga !== 'object') return;
-                  const chiavi = Object.keys(riga);
-                  const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
-                  if (valori.length === 0) return;
-
-                  let data = leggiValore(riga, 'data', 'giorno', 'date');
-                  let titolo = leggiValore(riga, 'titolo', 'title');
-                  let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo');
-                  let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2');
-
-                  if (!titolo && !data) {
-                    data = valori[0] || 'Oggi';
-                    titolo = valori[1] || 'Editoriale';
-                    p1 = valori[2] || '';
-                    p2 = valori[3] || '';
-                  } else if (!data) {
-                    data = (idx === 0) ? new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Archivio';
-                  }
-
-                  if (titolo) freschi.push({ data, titolo, p1, p2 });
-                });
-              }
-
-              if (freschi.length > 0) {
-                listaEditoriali = freschi;
-                salvaInCache('editoriale', freschi);
-                mostraEditoriale(0);
-                renderArchivioEditoriali();
-                if (loaderEd) loaderEd.classList.add('hidden');
-                if (contenutoEd) contenutoEd.classList.remove('hidden');
-              } else if (listaEditoriali.length === 0 && loaderEd) {
-                loaderEd.innerHTML = "<p class='text-amber-400 text-sm'>Nessun editoriale presente nel foglio Google.</p>";
-              }
-            }
-          });
-        })
-        .catch(err => {
-          if (listaEditoriali.length === 0 && loaderEd) {
-            loaderEd.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare l'editoriale.</p>";
+      fetchSicuro(urlEditoriale).then(csvText => {
+        Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
+          const freschi = [];
+          if (results.data) {
+            results.data.forEach((riga, idx) => {
+              if (!riga) return;
+              const chiavi = Object.keys(riga);
+              const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
+              if (valori.length === 0) return;
+              let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
+              let titolo = leggiValore(riga, 'titolo', 'title') || valori[1] || 'Editoriale';
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori[2] || '';
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
+              if (titolo) freschi.push({ data, titolo, p1, p2 });
+            });
           }
-        });
-
-      // 2. ULTIME NOTIZIE
-      fetchSicuro(urlNews)
-        .then(csvText => {
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: 'greedy',
-            complete: function(results) {
-              const fresche = [];
-              if (results.data && results.data.length > 0) {
-                results.data.forEach(riga => {
-                  if (!riga || typeof riga !== 'object') return;
-                  const chiavi = Object.keys(riga);
-                  const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
-
-                  const titolo = leggiValore(riga, 'titolo', 'title', 'notizia') || valori[0];
-                  if (!titolo) return;
-
-                  const fonte = leggiValore(riga, 'fonte', 'source', 'giornale') || valori[1] || 'Stampa';
-                  const tempo = leggiValore(riga, 'tempo', 'data', 'date') || valori[2] || 'Oggi';
-                  const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
-                  const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
-
-                  fresche.push({ titolo, fonte, tempo, riassunto, link });
-                });
-              }
-
-              if (fresche.length > 0) {
-                notizieSalvate = fresche;
-                salvaInCache('news', fresche);
-                renderNotizie(fresche);
-              } else if (notizieSalvate.length === 0 && loaderNews) {
-                loaderNews.innerHTML = "<p class='text-slate-400 text-sm'>Nessuna notizia trovata nel foglio News.</p>";
-              }
-            }
-          });
-        })
-        .catch(err => {
-          if (notizieSalvate.length === 0 && loaderNews) {
-            loaderNews.innerHTML = "<p class='text-rose-400 text-sm'>Impossibile scaricare le notizie.</p>";
+          if (freschi.length > 0) {
+            listaEditoriali = freschi;
+            salvaInCache('editoriale', freschi);
+            mostraEditoriale(0);
+            renderArchivioEditoriali();
+            document.getElementById('loader-editoriale')?.classList.add('hidden');
+            document.getElementById('contenuto-editoriale')?.classList.remove('hidden');
           }
-        });
+        }});
+      }).catch(e => {});
+
+      // 2. NEWS
+      fetchSicuro(urlNews).then(csvText => {
+        Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
+          const fresche = [];
+          if (results.data) {
+            results.data.forEach(riga => {
+              if (!riga) return;
+              const valori = Object.keys(riga).filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
+              const titolo = leggiValore(riga, 'titolo', 'notizia') || valori[0];
+              if (!titolo) return;
+              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori[1] || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data') || valori[2] || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+              fresche.push({ titolo, fonte, tempo, riassunto, link });
+            });
+          }
+          if (fresche.length > 0) {
+            notizieSalvate = fresche;
+            salvaInCache('news', fresche);
+            renderNotizie(fresche);
+          }
+        }});
+      }).catch(e => {});
 
       // 3. CLASSIFICA
       if (urlClassifica && urlClassifica.startsWith('http')) {
-        fetchSicuro(urlClassifica)
-          .then(csvText => {
-            Papa.parse(csvText, {
-              header: true,
-              skipEmptyLines: 'greedy',
-              complete: function(results) {
-                const righe = [];
-                if (results.data && results.data.length > 0) {
-                  results.data.forEach(riga => {
-                    if (!riga || typeof riga !== 'object') return;
-                    let pos = leggiValore(riga, 'pos.', 'pos', 'posizione', '#');
-                    let squadra = leggiValore(riga, 'squadra', 'club', 'team');
-                    let pt = leggiValore(riga, 'pt', 'punti');
-                    let g = leggiValore(riga, 'g', 'partite', 'pg');
-                    let v = leggiValore(riga, 'v', 'vinte');
-                    let n = leggiValore(riga, 'n', 'pareggi');
-                    let p = leggiValore(riga, 'p', 'perse');
-                    let dr = leggiValore(riga, 'dr', 'diff');
+        fetchSicuro(urlClassifica).then(csvText => {
+          Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
+            const righe = [];
+            if (results.data) {
+              results.data.forEach(riga => {
+                if (!riga) return;
+                let pos = leggiValore(riga, 'pos.', 'pos', '#');
+                let squadra = leggiValore(riga, 'squadra', 'club');
+                let pt = leggiValore(riga, 'pt', 'punti');
+                let g = leggiValore(riga, 'g', 'partite');
+                let v = leggiValore(riga, 'v', 'vinte');
+                let n = leggiValore(riga, 'n', 'pareggi');
+                let p = leggiValore(riga, 'p', 'perse');
+                let dr = leggiValore(riga, 'dr', 'diff');
 
-                    const chiavi = Object.keys(riga);
-                    if (!squadra && chiavi.length >= 8) {
-                      pos = riga[chiavi[0]];
-                      squadra = riga[chiavi[1]];
-                      pt = riga[chiavi[2]];
-                      g = riga[chiavi[3]];
-                      v = riga[chiavi[4]];
-                      n = riga[chiavi[5]];
-                      p = riga[chiavi[6]];
-                      dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
-                    }
-
-                    if (squadra) {
-                      squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
-                      pt = String(pt || '0').replace(/[\*\.]/g, '').trim();
-                      pos = String(pos || (righe.length + 1)).replace(/[\*\.]/g, '').trim();
-
-                      if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
-                        righe.push({
-                          pos: parseInt(pos) || (righe.length + 1),
-                          squadra: squadra,
-                          pt: pt,
-                          g: String(g || '0').replace(/\*/g, '').trim(),
-                          v: String(v || '0').replace(/\*/g, '').trim(),
-                          n: String(n || '0').replace(/\*/g, '').trim(),
-                          p: String(p || '0').replace(/\*/g, '').trim(),
-                          dr: String(dr || '0').replace(/\*/g, '').trim()
-                        });
-                      }
-                    }
-                  });
+                const chiavi = Object.keys(riga);
+                if (!squadra && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadra = riga[chiavi[1]]; pt = riga[chiavi[2]];
+                  g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
+                  p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-
-                if (righe.length > 0) {
-                  salvaInCache('classifica', righe);
-                  renderTabellaClassifica(righe);
-                } else if (!leggiDaCache('classifica') && loaderClassifica) {
-                  loaderClassifica.innerHTML = "<p class='text-amber-400 text-xs'>Dati classifica non trovati nel foglio.</p>";
+                if (squadra) {
+                  squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                    righe.push({
+                      pos: parseInt(String(pos).replace(/[\*\.]/g, '')) || (righe.length + 1),
+                      squadra: squadra,
+                      pt: String(pt || '0').replace(/[\*\.]/g, '').trim(),
+                      g: String(g || '0').replace(/\*/g, '').trim(),
+                      v: String(v || '0').replace(/\*/g, '').trim(),
+                      n: String(n || '0').replace(/\*/g, '').trim(),
+                      p: String(p || '0').replace(/\*/g, '').trim(),
+                      dr: String(dr || '0').replace(/\*/g, '').trim()
+                    });
+                  }
                 }
-              }
-            });
-          })
-          .catch(err => {
-            if (!leggiDaCache('classifica') && loaderClassifica) {
-              loaderClassifica.innerHTML = "<p class='text-rose-400 text-xs'>Impossibile scaricare la classifica.</p>";
+              });
             }
-          });
+            if (righe.length > 0) { salvaInCache('classifica', righe); renderTabellaClassifica(righe); }
+          }});
+        }).catch(e => {});
       }
 
       // 4. PARTITE
       if (urlPartite && urlPartite.startsWith('http')) {
-        fetchSicuro(urlPartite)
-          .then(csvText => {
-            Papa.parse(csvText, {
-              header: true,
-              skipEmptyLines: 'greedy',
-              complete: function(results) {
-                if (results.data && results.data.length > 0) {
-                  const partiteLette = [];
-                  results.data.forEach(r => {
-                    if (!r || typeof r !== 'object') return;
-                    const chiavi = Object.keys(r);
-                    const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
-                    if (valori.length < 2) return;
+        fetchSicuro(urlPartite).then(csvText => {
+          Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
+            if (results.data) {
+              const partiteLette = [];
+              results.data.forEach(r => {
+                if (!r) return;
+                const chiavi = Object.keys(r);
+                const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
+                if (valori.length < 2) return;
 
-                    let comp = leggiValore(r, 'competizione', 'torneo', 'campionato') || valori[0] || 'Serie A';
-                    let avv = leggiValore(r, 'avversario', 'squadra', 'partita', 'match') || valori[1] || '';
-                    let luog = leggiValore(r, 'luogo', 'stadio', 'citta', 'città', 'sede', 'dove') || valori[2] || '';
-                    let dat = leggiValore(r, 'data', 'giorno') || valori[3] || 'Prossimamente';
-                    let orar = leggiValore(r, 'orario', 'ora') || valori[4] || '20:45';
+                let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
+                let avv = leggiValore(r, 'avversario', 'squadra') || valori[1] || '';
+                let luog = leggiValore(r, 'luogo', 'stadio') || valori[2] || '';
+                let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
+                let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
 
-                    if (avv) {
-                      avv = avv.replace(/\binter\b/gi, '')
-                               .replace(/\bvs\.?\b/gi, '')
-                               .replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '')
-                               .trim();
-
-                      if (avv.length > 1) {
-                        partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
-                      }
-                    }
-                  });
-
-                  if (partiteLette.length > 0) {
-                    prossimePartite = partiteLette.slice(0, 3);
-                    salvaInCache('partite', prossimePartite);
-                    renderPartite();
-                  }
+                if (avv) {
+                  avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '').trim();
+                  if (avv.length > 1) partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                 }
+              });
+              if (partiteLette.length > 0) {
+                prossimePartite = partiteLette.slice(0, 3);
+                salvaInCache('partite', prossimePartite);
+                renderPartite();
               }
-            });
-          })
-          .catch(err => {
-            console.warn("Utilizzo partite precaricate:", err);
-          });
+            }
+          }});
+        }).catch(e => {});
       }
     }
 
-    // Archivio Storico Fisso
+    // -------------------------------------------------------------
+    // ALBO D'ORO SCUDETTI
+    // -------------------------------------------------------------
+    const scudettiData = [
+      { num: 1, anno: "1909-10", mister: "Virgilio Fossati", bomber: "Peterly (25)" },
+      { num: 2, anno: "1919-20", mister: "Resegotti", bomber: "Aebi (19)" },
+      { num: 3, anno: "1929-30", mister: "Árpád Weisz", bomber: "Meazza (31)" },
+      { num: 4, anno: "1937-38", mister: "A. Castellazzi", bomber: "Meazza (20)" },
+      { num: 5, anno: "1939-40", mister: "Tony Cargnelli", bomber: "Guarnieri (15)" },
+      { num: 6, anno: "1952-53", mister: "Alfredo Foni", bomber: "Nyers (15)" },
+      { num: 7, anno: "1953-54", mister: "Alfredo Foni", bomber: "Skoglund (11)" },
+      { num: 8, anno: "1962-63", mister: "Helenio Herrera", bomber: "Di Giacomo (11)" },
+      { num: 9, anno: "1964-65", mister: "Helenio Herrera", bomber: "Mazzola (17)" },
+      { num: 10, anno: "1965-66", mister: "Helenio Herrera", bomber: "Mazzola (11)", nota: "⭐ 1a Stella" },
+      { num: 11, anno: "1970-71", mister: "G. Invernizzi", bomber: "Boninsegna (24)" },
+      { num: 12, anno: "1979-80", mister: "E. Bersellini", bomber: "Altobelli (15)" },
+      { num: 13, anno: "1988-89", mister: "G. Trapattoni", bomber: "Serena (22)", nota: "Record" },
+      { num: 14, anno: "2005-06", mister: "Roberto Mancini", bomber: "Cruz (15)" },
+      { num: 15, anno: "2006-07", mister: "Roberto Mancini", bomber: "Ibrahimović (15)" },
+      { num: 16, anno: "2007-08", mister: "Roberto Mancini", bomber: "Ibrahimović (17)" },
+      { num: 17, anno: "2008-09", mister: "José Mourinho", bomber: "Ibrahimović (25)" },
+      { num: 18, anno: "2009-10", mister: "José Mourinho", bomber: "Milito (22)", nota: "🏆 Triplete" },
+      { num: 19, anno: "2020-21", mister: "Antonio Conte", bomber: "Lukaku (24)" },
+      { num: 20, anno: "2023-24", mister: "Simone Inzaghi", bomber: "Martínez (24)", nota: "⭐⭐ 2a Stella" },
+      { num: 21, anno: "2025-26", mister: "Simone Inzaghi", bomber: "Martínez (26)", nota: "Leggenda" }
+    ];
+
+    function renderScudetti() {
+      const container = document.getElementById('scudetti-grid');
+      if (!container) return;
+      container.innerHTML = '';
+      scudettiData.forEach(s => {
+        let badge = '';
+        let borderClass = 'border-blue-900/40 hover:border-blue-500/50';
+        
+        if (s.nota) {
+          badge = `<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">${s.nota}</span>`;
+          if (s.nota.includes('Stella') || s.nota.includes('Triplete') || s.nota.includes('Leggenda')) {
+            borderClass = 'border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.15)]';
+          }
+        }
+        
+        container.innerHTML += `
+          <div class="bg-inter-card border ${borderClass} rounded-xl p-3 flex flex-col items-center text-center relative transition group cursor-default">
+            ${badge}
+            <div class="text-[32px] leading-none font-black text-white/5 absolute top-2 right-2 select-none">${s.num}</div>
+            
+            <div class="scudetto-icon mb-1.5">
+              <div class="w-1/3 h-full bg-green-600"></div>
+              <div class="w-1/3 h-full bg-white"></div>
+              <div class="w-1/3 h-full bg-red-600"></div>
+            </div>
+            
+            <h4 class="font-black text-white text-base tracking-widest mb-1 z-10">${s.anno}</h4>
+            <div class="w-6 h-[2px] bg-yellow-500/60 mb-1.5 z-10"></div>
+            
+            <p class="text-[10px] text-slate-300 mb-0.5 z-10 w-full truncate"><span class="text-slate-500">Mister:</span> ${s.mister}</p>
+            <p class="text-[10px] text-yellow-400 font-semibold z-10 w-full truncate"><i class="fa-solid fa-futbol text-[9px] mr-1"></i>${s.bomber}</p>
+          </div>
+        `;
+      });
+    }
+
+    // -------------------------------------------------------------
+    // RICERCA ARCHIVIO STORICO
+    // -------------------------------------------------------------
     const datiStorici = [
-      { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
-      { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
+      { anno: "1908", titolo: "La Fondazione", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
+      { anno: "1964 - 1965", titolo: "La Grande Inter", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
       { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
-      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" },
-      { anno: "2024", titolo: "La Seconda Stella", categoria: "Scudetto", dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024" }
+      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" }
     ];
 
     function renderHistory(items) {
@@ -853,7 +803,8 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Inizializzazione
+    // Avvio sequenza
+    renderScudetti();
     renderPartite();
     renderHistory(datiStorici);
     caricaDaCacheLocale();
