@@ -6,6 +6,9 @@
   
   <title>Spazio Nerazzurro | Ultime Notizie, Editoriale Quotidiano e Storia dell'Inter</title>
 
+  <!-- Monitoraggio Visite Privacy-Friendly (GoatCounter) -->
+  <script data-goatcounter="https://spazionerazzurro.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
   <!-- Favicon Nerazzurra SVG incorporata -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
 
@@ -850,7 +853,7 @@
       renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
     }
 
-    // Sequenza di avvio: prima carica la cache istantanea, poi sincronizza
+    // Inizializzazione
     renderPartite();
     renderHistory(datiStorici);
     caricaDaCacheLocale();
