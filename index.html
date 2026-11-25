@@ -5,27 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Spazio Nerazzurro | Ultime Notizie, Editoriale Quotidiano e Storia dell'Inter</title>
-
+  
   <!-- Monitoraggio Visite Privacy-Friendly (GoatCounter) -->
   <script data-goatcounter="https://spazionerazzurro.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-
+  
   <!-- Favicon Nerazzurra SVG incorporata -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
 
-  <!-- Meta Tag SEO -->
+  <!-- Meta Tag SEO Principali -->
   <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite e classifica Serie A.">
   <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter">
   <meta name="author" content="Redazione Spazio Nerazzurro">
   <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#00133e">
 
   <!-- Verifica Google Search Console -->
   <meta name="google-site-verification" content="Y_NGmcsTcRh2D-xqp5l-CftXyXIFZ3q8kS03vEKQWSk" />
 
-  <meta name="theme-color" content="#00133e">
+  <!-- URL Canonico -->
+  <link rel="canonical" href="https://agostino-tricella.github.io/euphonious-lamington-d5d417/" />
+
+  <!-- Open Graph / Facebook / WhatsApp / Telegram -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://agostino-tricella.github.io/euphonious-lamington-d5d417/">
+  <meta property="og:title" content="Spazio Nerazzurro | Notizie, Editoriale e Storia dell'Inter">
+  <meta property="og:description" content="Spazio indipendente, 100% libero da pubblicità, dedicato all'Inter. Leggi l'editoriale quotidiano del tifoso, ultime notizie e la storia nerazzurra.">
+  <meta property="og:image" content="https://agostino-tricella.github.io/euphonious-lamington-d5d417/assets/og-image.jpg">
+
+  <!-- Twitter / X -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://agostino-tricella.github.io/euphonious-lamington-d5d417/">
+  <meta property="twitter:title" content="Spazio Nerazzurro | Notizie e Storia dell'Inter">
+  <meta property="twitter:description" content="Editoriale quotidiano del tifoso, ultime notizie in tempo reale e l'albo d'oro dei 21 scudetti.">
+  <meta property="twitter:image" content="https://agostino-tricella.github.io/euphonious-lamington-d5d417/assets/og-image.jpg">
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Caricamento asincrono non bloccante per migliorare la velocità (Core Web Vitals) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
@@ -52,11 +69,11 @@
           IM
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></h1>
+          <!-- Ottimizzazione SEO: Sostituito h1 con un div identico graficamente per dare priorità H1 all'editoriale -->
+          <div class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></div>
           <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
       </div>
-
       <!-- Navigazione Schede -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto">
         <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
@@ -77,7 +94,6 @@
 
   <!-- Contenuto Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
-
     <!-- SEZIONE 1: EDITORIALE & ARCHIVIO -->
     <section id="section-editoriale" class="tab-content">
       <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
@@ -89,7 +105,6 @@
           Torna all'ultimo editoriale di oggi &rarr;
         </button>
       </div>
-
       <div class="bg-inter-card border border-blue-900/50 rounded-2xl p-6 md:p-10 shadow-xl relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -110,14 +125,13 @@
             <div class="h-4 bg-slate-800/50 rounded w-5/6"></div>
           </div>
         </div>
-
         <div id="contenuto-editoriale" class="hidden">
-          <h2 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h2>
+          <!-- Ottimizzazione SEO: Titolo dell'articolo principale impostato come H1 -->
+          <h1 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h1>
           <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
             <p id="editoriale-p1"></p>
             <p id="editoriale-p2"></p>
           </div>
-
           <div class="mt-8 pt-5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
             <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <i class="fa-solid fa-share-nodes text-yellow-500"></i> Condividi editoriale:
@@ -135,13 +149,11 @@
             </div>
           </div>
         </div>
-
         <div class="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>A cura della Redazione</span>
           <span>Spazio libero da pubblicità</span>
         </div>
       </div>
-
       <div id="sezione-archivio-editoriali" class="mt-10 hidden">
         <div class="mb-4 flex items-center gap-2">
           <i class="fa-solid fa-box-archive text-yellow-500 text-lg"></i>
@@ -168,7 +180,6 @@
           <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
         </div>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid"></div>
     </section>
 
@@ -181,7 +192,6 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="partite-grid"></div>
       </div>
-
       <div>
         <div class="mb-4 flex items-center justify-between">
           <div>
@@ -193,7 +203,6 @@
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Europa League</span>
           </div>
         </div>
-
         <div class="bg-inter-card border border-blue-900/40 rounded-xl overflow-hidden shadow">
           <div id="loader-classifica" class="p-6 space-y-3 animate-pulse">
             <div class="h-4 bg-slate-800/80 rounded w-full"></div>
@@ -201,7 +210,6 @@
             <div class="h-4 bg-slate-800/50 rounded w-full"></div>
             <div class="h-4 bg-slate-800/40 rounded w-full"></div>
           </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-300 hidden" id="classifica-tabella">
               <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-blue-900/40">
@@ -225,7 +233,6 @@
 
     <!-- SEZIONE 4: ARCHIVIO STORICO & SCUDETTI -->
     <section id="section-storia" class="tab-content hidden">
-      
       <!-- L'Albo d'Oro dei 21 Scudetti -->
       <div class="mb-14">
         <div class="text-center mb-8">
@@ -237,12 +244,10 @@
           <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
         </div>
         
-        <!-- Griglia Scudetti: su PC 7 colonne per avere 3 righe perfette -->
+        <!-- Griglia Scudetti -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
       </div>
-
       <div class="w-full h-px bg-slate-800/80 my-8"></div>
-
       <!-- Ricerca Eventi Storici -->
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -260,7 +265,6 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="history-container"></div>
       <p id="no-results" class="text-center text-slate-500 py-12 hidden">Nessun evento corrisponde alla ricerca.</p>
     </section>
-
   </main>
 
   <!-- Footer -->
@@ -276,7 +280,6 @@
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
-
     let listaEditoriali = [];
     let notizieSalvate = [];
 
@@ -303,10 +306,11 @@
       }
     }
 
-    // Gestione Cache Locale
+    // Gestione Cache Locale - Corretti i caratteri di escape \ prima di underscore
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
+
     function leggiDaCache(chiave) {
       try {
         const item = localStorage.getItem('sn_' + chiave);
@@ -346,19 +350,23 @@
         });
     }
 
-    // Condivisione Rapida
+    // Condivisione Rapida - Corretti caratteri di escape su backticks
     function getShareText() {
       const ed = listaEditoriali[0] || {};
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
-      return encodeURIComponent(`"${titolo}" - Leggi l'editoriale su Spazio Nerazzurro: ` + window.location.href);
+      return encodeURIComponent('"' + titolo + '" - Leggi l\'editoriale su Spazio Nerazzurro: ' + window.location.href);
     }
-    function condividiWhatsApp() { window.open(`https://api.whatsapp.com/send?text=${getShareText()}`, '_blank'); }
+
+    // Corretti i caratteri di escape
+    function condividiWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
+    
     function condividiTelegram() {
       const ed = listaEditoriali[0] || {};
       const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
       const url = encodeURIComponent(window.location.href);
-      window.open(`https://t.me/share/url?url=${url}&text=${titolo}`, '_blank');
+      window.open('https://t.me/share/url?url=' + url + '&text=' + titolo, '_blank');
     }
+
     function copiaLink() {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href).then(() => {
@@ -373,21 +381,17 @@
 
     function mostraEditoriale(indice) {
       if (!listaEditoriali || !listaEditoriali[indice]) return;
-
       const ed = listaEditoriali[indice];
       const titoloEl = document.getElementById('editoriale-titolo');
       const p1El = document.getElementById('editoriale-p1');
       const p2El = document.getElementById('editoriale-p2');
       const dataEl = document.getElementById('data-editoriale-attivo');
-
       if (titoloEl) titoloEl.textContent = ed.titolo || '';
       if (p1El) p1El.textContent = ed.p1 || '';
       if (p2El) p2El.textContent = ed.p2 || '';
       if (dataEl) dataEl.textContent = ed.data || '';
-
       const avviso = document.getElementById('avviso-archivio');
       const etichetta = document.getElementById('etichetta-editoriale');
-
       if (indice === 0) {
         if (avviso) avviso.classList.add('hidden');
         if (etichetta) etichetta.textContent = "Il Punto Quotidiano";
@@ -405,13 +409,11 @@
       const container = document.getElementById('sezione-archivio-editoriali');
       if (!grid || !container) return;
       grid.innerHTML = '';
-
       if (listaEditoriali.length <= 1) {
         container.classList.add('hidden');
         return;
       }
       container.classList.remove('hidden');
-
       for (let i = 1; i < listaEditoriali.length; i++) {
         const ed = listaEditoriali[i];
         const card = document.createElement('div');
@@ -442,7 +444,6 @@
       const loaderNews = document.getElementById('loader-news');
       if (!gridNews) return;
       gridNews.innerHTML = '';
-
       if (notizie && notizie.length > 0) {
         notizie.forEach(r => {
           const card = document.createElement('article');
@@ -473,7 +474,6 @@
       const partiteContainer = document.getElementById('partite-grid');
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
-
       prossimePartite.forEach(p => {
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
@@ -483,7 +483,6 @@
         const squadraTrasferta = isCasa ? p.avversario : 'INTER';
         const stileCasa = isCasa ? 'text-white font-extrabold' : 'text-slate-300 font-bold';
         const stileTrasferta = isCasa ? 'text-slate-300 font-bold' : 'text-white font-extrabold';
-
         const card = document.createElement('div');
         card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden";
         card.innerHTML = `
@@ -509,19 +508,15 @@
       const classificaBody = document.getElementById('classifica-body');
       const loader = document.getElementById('loader-classifica');
       const tabella = document.getElementById('classifica-tabella');
-
       if (!classificaBody) return;
       classificaBody.innerHTML = '';
-
       dati.forEach(r => {
         const isInter = r.squadra.toLowerCase().includes('inter');
         const posNum = parseInt(r.pos) || 0;
-
         const rowClass = isInter ? "bg-blue-950/60 font-bold text-white border-l-4 border-yellow-500" : "hover:bg-slate-900/50 transition";
         let indicator = `<span class="text-slate-500 text-xs">${r.pos}</span>`;
         if (posNum > 0 && posNum <= 4) indicator = `<span class="text-blue-400 font-bold text-xs">${r.pos}</span>`;
         else if (posNum === 5) indicator = `<span class="text-amber-400 font-bold text-xs">${r.pos}</span>`;
-
         const tr = document.createElement('tr');
         tr.className = rowClass;
         tr.innerHTML = `
@@ -539,7 +534,6 @@
         `;
         classificaBody.appendChild(tr);
       });
-
       if (loader) loader.classList.add('hidden');
       if (tabella) tabella.classList.remove('hidden');
     }
@@ -624,32 +618,31 @@
               results.data.forEach(riga => {
                 if (!riga) return;
                 let pos = leggiValore(riga, 'pos.', 'pos', '#');
-                let squadra = leggiValore(riga, 'squadra', 'club');
+                let squadron = leggiValore(riga, 'squadra', 'club');
                 let pt = leggiValore(riga, 'pt', 'punti');
                 let g = leggiValore(riga, 'g', 'partite');
                 let v = leggiValore(riga, 'v', 'vinte');
                 let n = leggiValore(riga, 'n', 'pareggi');
                 let p = leggiValore(riga, 'p', 'perse');
                 let dr = leggiValore(riga, 'dr', 'diff');
-
                 const chiavi = Object.keys(riga);
-                if (!squadra && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadra = riga[chiavi[1]]; pt = riga[chiavi[2]];
+                if (!squadron && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadron = riga[chiavi[1]]; pt = riga[chiavi[2]];
                   g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
                   p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-                if (squadra) {
-                  squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
-                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                if (squadron) {
+                  squadron = squadron.replace(/[\\\*\\\[\\\]\\(\\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadron.length > 2 && !squadron.toLowerCase().includes('retrocessione')) {
                     righe.push({
-                      pos: parseInt(String(pos).replace(/[\*\.]/g, '')) || (righe.length + 1),
-                      squadra: squadra,
-                      pt: String(pt || '0').replace(/[\*\.]/g, '').trim(),
-                      g: String(g || '0').replace(/\*/g, '').trim(),
-                      v: String(v || '0').replace(/\*/g, '').trim(),
-                      n: String(n || '0').replace(/\*/g, '').trim(),
-                      p: String(p || '0').replace(/\*/g, '').trim(),
-                      dr: String(dr || '0').replace(/\*/g, '').trim()
+                      pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
+                      squadra: squadron,
+                      pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
+                      g: String(g || '0').replace(/\\\*/g, '').trim(),
+                      v: String(v || '0').replace(/\\\*/g, '').trim(),
+                      n: String(n || '0').replace(/\\\*/g, '').trim(),
+                      p: String(p || '0').replace(/\\\*/g, '').trim(),
+                      dr: String(dr || '0').replace(/\\\*/g, '').trim()
                     });
                   }
                 }
@@ -671,15 +664,13 @@
                 const chiavi = Object.keys(r);
                 const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
                 if (valori.length < 2) return;
-
                 let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
                 let avv = leggiValore(r, 'avversario', 'squadra') || valori[1] || '';
                 let luog = leggiValore(r, 'luogo', 'stadio') || valori[2] || '';
                 let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
                 let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
-
                 if (avv) {
-                  avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '').trim();
+                  avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\\-–—:]+|[\s\\-–—:]+$/g, '').trim();
                   if (avv.length > 1) partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                 }
               });
@@ -730,7 +721,7 @@
         let borderClass = 'border-blue-900/40 hover:border-blue-500/50';
         
         if (s.nota) {
-          badge = `<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">${s.nota}</span>`;
+          badge = '<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">' + s.nota + '</span>';
           if (s.nota.includes('Stella') || s.nota.includes('Triplete') || s.nota.includes('Leggenda')) {
             borderClass = 'border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.15)]';
           }
@@ -812,3 +803,4 @@
   </script>
 </body>
 </html>
+
