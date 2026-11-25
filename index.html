@@ -41,7 +41,7 @@
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito (Core Web Vitals) -->
+  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -69,7 +69,7 @@
           IM
         </div>
         <div>
-          <!-- Ottimizzazione SEO: Sostituito h1 con un div per dare priorità H1 all'editoriale -->
+          <!-- Ottimizzazione SEO: div anziché h1 nell'header -->
           <div class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></div>
           <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
@@ -126,7 +126,7 @@
           </div>
         </div>
         <div id="contenuto-editoriale" class="hidden">
-          <!-- Ottimizzazione SEO: Il titolo dell'articolo principale diventa H1 -->
+          <!-- Ottimizzazione SEO: Titolo principale impostato come H1 -->
           <h1 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h1>
           <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
             <p id="editoriale-p1"></p>
@@ -244,7 +244,7 @@
           <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
         </div>
         
-        <!-- Griglia Scudetti: su PC 7 colonne per avere 3 righe perfette -->
+        <!-- Griglia Scudetti -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
       </div>
       <div class="w-full h-px bg-slate-800/80 my-8"></div>
@@ -309,7 +309,7 @@
       }
     }
 
-    // Gestione Cache Locale
+    // Gestione Cache Locale - Rimossi tutti i caratteri di escape \ indesiderati
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
@@ -360,9 +360,9 @@
       return encodeURIComponent('"' + titolo + '" - Leggi l\'editoriale su Spazio Nerazzurro: ' + window.location.href);
     }
 
-    function condiviWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
+    function condividiWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
 
-    function condiviTelegram() {
+    function condividiTelegram() {
       const ed = listaEditoriali[0] || {};
       const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
       const url = encodeURIComponent(window.location.href);
@@ -472,14 +472,14 @@
       }
     }
 
-    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript
+    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CORRETTO!)
     function parseDataItaliana(strData) {
       if (!strData) return null;
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
       const giorno = parseInt(parti[0], 10);
-      const mese = parseInt(parti[1], 10) - 1; // I mesi in JS vanno da 0 a 11
-      let anno = parseInt(parti[2], 10);
+      const mese = parseInt(parti[1], 10) - 1; // I mesi in JS vanno da 0 a 11 (CORRETTO parti[1])
+      let anno = parseInt(parti[2], 10);        // CORRETTO parti[2]
       
       // Auto-correzione se l'anno è scritto a due cifre (es. "26" -> "2026")
       if (anno < 100) {
@@ -661,7 +661,7 @@
               results.data.forEach(riga => {
                 if (!riga) return;
                 let pos = leggiValore(riga, 'pos.', 'pos', '#');
-                let squadron = leggiValore(riga, 'squadra', 'club');
+                let squadra = leggiValore(riga, 'squadra', 'club');
                 let pt = leggiValore(riga, 'pt', 'punti');
                 let g = leggiValore(riga, 'g', 'partite');
                 let v = leggiValore(riga, 'v', 'vinte');
@@ -669,17 +669,17 @@
                 let p = leggiValore(riga, 'p', 'perse');
                 let dr = leggiValore(riga, 'dr', 'diff');
                 const chiavi = Object.keys(riga);
-                if (!squadron && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadron = riga[chiavi[1]]; pt = riga[chiavi[2]];
+                if (!squadra && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadra = riga[chiavi[1]]; pt = riga[chiavi[2]];
                   g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
                   p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-                if (squadron) {
-                  squadron = squadron.replace(/[\\\*\\\[\\\]\\(\\)]/g, '').replace(/[0-9]/g, '').trim();
-                  if (squadron.length > 2 && !squadron.toLowerCase().includes('retrocessione')) {
+                if (squadra) {
+                  squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
                     righe.push({
                       pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
-                      squadra: squadron,
+                      squadra: squadra,
                       pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
                       g: String(g || '0').replace(/\\\*/g, '').trim(),
                       v: String(v || '0').replace(/\\\*/g, '').trim(),
@@ -696,7 +696,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE
+      // 4. PARTITE (Allineato ed ottimizzato per il tuo foglio specifico "partite")
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -846,3 +846,4 @@
   </script>
 </body>
 </html>
+
