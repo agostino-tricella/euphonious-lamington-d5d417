@@ -283,11 +283,14 @@
     let listaEditoriali = [];
     let notizieSalvate = [];
 
-    // Partite base lette e caricate direttamente dal tuo file (Sincronizzate con il 09/12)
+    // Partite base (caricate in caso di fallback offline)
     let prossimePartite = [
+      { competizione: "Champions League", avversario: "Stoccarda", luogo: "San Siro", data: "25/11/2026", orario: "21:00" },
+      { competizione: "Campionato", avversario: "Genoa", luogo: "San Siro", data: "28/11/2026", orario: "20:45" },
       { competizione: "Coppa Italia", avversario: "Genoa", luogo: "San Siro", data: "01/12/2026", orario: "21:00" },
       { competizione: "Campionato", avversario: "Frosinone", luogo: "Frosinone", data: "05/12/2026", orario: "18:00" },
-      { competizione: "Champions League", avversario: "Borussia Dortmund", luogo: "Dortmund", data: "09/12/2026", orario: "21:00" }
+      { competizione: "Champions League", avversario: "Borussia Dortmund", luogo: "Dortmund", data: "09/12/2026", orario: "21:00" },
+      { competizione: "Campionato", avversario: "Torino", luogo: "San Siro", data: "13/12/2026", orario: "15:00" }
     ];
 
     // Navigazione
@@ -306,7 +309,7 @@
       }
     }
 
-    // Gestione Cache Locale - Rimossi tutti i caratteri di escape \ indesiderati
+    // Gestione Cache Locale
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
@@ -350,7 +353,7 @@
         });
     }
 
-    // Condivisione Rapida - Ottimizzata la formattazione delle stringhe
+    // Condivisione Rapida
     function getShareText() {
       const ed = listaEditoriali[0] || {};
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
@@ -469,11 +472,47 @@
       }
     }
 
+    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript
+    function parseDataItaliana(strData) {
+      if (!strData) return null;
+      const parti = strData.split('/');
+      if (parti.length !== 3) return null;
+      const giorno = parseInt(parti[0], 10);
+      const mese = parseInt(parti, 10) - 1; // I mesi in JS vanno da 0 a 11
+      const anno = parseInt(parti, 10);
+      return new Date(anno, mese, giorno, 23, 59, 59); // Impostiamo a fine giornata
+    }
+
     function renderPartite() {
       const partiteContainer = document.getElementById('partite-grid');
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
-      prossimePartite.forEach(p => {
+
+      // Otteniamo la data odierna senza l'ora per evitare di filtrare via i match che si giocano oggi
+      const oggi = new Date();
+      oggi.setHours(0, 0, 0, 0);
+
+      // 1. Filtriamo solo le partite da oggi in poi
+      // 2. Ordiniamo cronologicamente
+      // 3. Prendiamo al massimo le prime 3
+      const filtrate = prossimePartite
+        .filter(p => {
+          const dataMatch = parseDataItaliana(p.data);
+          return dataMatch !== null && dataMatch >= oggi;
+        })
+        .sort((a, b) => parseDataItaliana(a.data) - parseDataItaliana(b.data))
+        .slice(0, 3);
+
+      if (filtrate.length === 0) {
+        partiteContainer.innerHTML = `
+          <div class="col-span-3 text-center text-slate-500 py-8">
+            <i class="fa-solid fa-info-circle mr-2"></i> Nessuna partita in programma prossimamente.
+          </div>
+        `;
+        return;
+      }
+
+      filtrate.forEach(p => {
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
         const tLuogo = (p.luogo || '').toLowerCase();
@@ -568,7 +607,7 @@
               let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
               let titolo = leggiValore(riga, 'titolo', 'title') || valori || 'Editoriale';
               let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori || '';
-              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori || '';
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
               if (titolo) freschi.push({ data, titolo, p1, p2 });
             });
           }
@@ -595,8 +634,8 @@
               if (!titolo) return;
               const fonte = leggiValore(riga, 'fonte', 'giornale') || valori || 'Stampa';
               const tempo = leggiValore(riga, 'tempo', 'data') || valori || 'Oggi';
-              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori || '';
-              const link = leggiValore(riga, 'link', 'url') || valori || '#';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
               fresche.push({ titolo, fonte, tempo, riassunto, link });
             });
           }
@@ -627,8 +666,8 @@
                 const chiavi = Object.keys(riga);
                 if (!squadra && chiavi.length >= 8) {
                   pos = riga[chiavi[0]]; squadra = riga[chiavi]; pt = riga[chiavi];
-                  g = riga[chiavi]; v = riga[chiavi]; n = riga[chiavi];
-                  p = riga[chiavi]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                  g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
+                  p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
                 if (squadra) {
                   squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
@@ -652,7 +691,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE (Allineato ed ottimizzato per il tuo foglio specifico "partite")
+      // 4. PARTITE - Sincronizzazione dinamica corretta per date italiane
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -666,16 +705,15 @@
                 let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
                 let avv = leggiValore(r, 'avversario', 'squadra') || valori || '';
                 let luog = leggiValore(r, 'luogo', 'stadio') || valori || '';
-                let dat = leggiValore(r, 'data') || valori || 'Prossimamente';
-                let orar = leggiValore(r, 'orario') || valori || '20:45';
+                let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
+                let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
                 if (avv) {
                   avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\\-–—:]+|[\s\\-–—:]+$/g, '').trim();
                   if (avv.length > 1) partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                 }
               });
               if (partiteLette.length > 0) {
-                // Filtriamo solo le prime 3 partite a partire da dicembre
-                prossimePartite = partiteLette.slice(0, 3);
+                prossimePartite = partiteLette;
                 salvaInCache('partite', prossimePartite);
                 renderPartite();
               }
