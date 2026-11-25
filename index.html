@@ -13,8 +13,8 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
 
   <!-- Meta Tag SEO Principali -->
-  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite, classifica Serie A e risultati storici.">
-  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter, risultati stagionali inter">
+  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite e classifica Serie A.">
+  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter, risultati Inter">
   <meta name="author" content="Redazione Spazio Nerazzurro">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#00133e">
@@ -41,7 +41,7 @@
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito -->
+  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito (Core Web Vitals) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -69,7 +69,7 @@
           IM
         </div>
         <div>
-          <!-- Ottimizzazione SEO: div anziché h1 nell'header -->
+          <!-- Ottimizzazione SEO: Sostituito h1 con un div per dare priorità H1 all'editoriale -->
           <div class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></div>
           <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
@@ -85,7 +85,6 @@
         <button onclick="switchTab('partite')" id="tab-partite" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days mr-2"></i>Partite & Classifica
         </button>
-        <!-- NUOVA SCHEDA RISULTATI -->
         <button onclick="switchTab('risultati')" id="tab-risultati" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-square-poll-horizontal mr-2"></i>Risultati
         </button>
@@ -235,25 +234,22 @@
       </div>
     </section>
 
-    <!-- SEZIONE NUOVA: RISULTATI STAGIONALI (OPZIONE B - FOOTYSTATS WIDGET AUTOMATICO) -->
+    <!-- SEZIONE NUOVA: RISULTATI STAGIONALI (OPZIONE A - SCOREAXIS CON COMPATIBILITÀ ASSOLUTA) -->
     <section id="section-risultati" class="tab-content hidden">
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-white">Risultati Stagionali</h2>
-        <p class="text-sm text-slate-400">Punteggi, dettagli e marcatori di tutte le partite dell'Inter aggiornati automaticamente.</p>
+        <p class="text-sm text-slate-400">Tutti i punteggi, i marcatori e i dettagli dei match nerazzurri aggiornati automaticamente.</p>
       </div>
 
-      <div class="bg-inter-card border border-blue-900/40 rounded-xl p-4 shadow-lg">
-        <div id="fs-results"></div>
-        <script>
-          (function (w,d,s,o,f,js,fjs) {
-            w['fsResultsEmbed']=o;w[o] = w[o] || function () { (w[o].q = w[o].q || []).push(arguments) };
-            js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
-            js.id = o; js.src = f; js.async = 1;
-            fjs.parentNode.insertBefore(js, fjs);
-          }(window, document, 'script', 'mw', 'https://cdn.footystats.org/embeds/results.js'));
-          // ID Team 1045 corrisponde all'F.C. Internazionale Milano
-          mw('params', { teamID: 1045, limit: 10, theme: 'dark' });
-        </script>
+      <div class="bg-inter-card border border-blue-900/40 rounded-xl p-2 md:p-4 shadow-lg">
+        <!-- Widget ScoreAxis Iframe nativo: immune ai blocchi di sicurezza, sicuro ed estremamente rapido -->
+        <iframe 
+          src="https://www.scoreaxis.com/widget/team-results/1530?autoHeight=1&bodyBackground=%230b1a30&textColor=%23cbd5e1&font=sans-serif&links=0" 
+          style="width: 100%; border: none; transition: all 0.3s ease;" 
+          id="sa-iframe-risultati" 
+          height="650" 
+          title="Risultati Stagionali Inter Live">
+        </iframe>
       </div>
     </section>
 
@@ -306,10 +302,11 @@
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
+    
     let listaEditoriali = [];
     let notizieSalvate = [];
 
-    // Partite base (caricate in caso di fallback offline)
+    // Partite base (offline fallback)
     let prossimePartite = [
       { competizione: "Champions League", avversario: "Stoccarda", luogo: "San Siro", data: "25/11/2026", orario: "21:00" },
       { competizione: "Campionato", avversario: "Genoa", luogo: "San Siro", data: "28/11/2026", orario: "20:45" },
@@ -353,6 +350,7 @@
       return String(val).trim();
     }
 
+    // Lettura dati e gestione fallback
     function leggiValore(riga, ...nomiPossibili) {
       if (!riga || typeof riga !== 'object') return '';
       const chiavi = Object.keys(riga);
@@ -498,14 +496,14 @@
       }
     }
 
-    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CON INDICI CORRETTI)
+    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CON INDICI CORRETTI!)
     function parseDataItaliana(strData) {
       if (!strData) return null;
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
       
       const giorno = parseInt(parti[0], 10);
-      const mese = parseInt(parti[1], 10) - 1; // Gennaio = 0, Dicembre = 11
+      const mese = parseInt(parti[1], 10) - 1; // Mesi in JS: 0 = Gennaio, 11 = Dicembre
       let anno = parseInt(parti[2], 10);
       
       if (isNaN(giorno) || isNaN(mese) || isNaN(anno)) return null;
@@ -514,6 +512,7 @@
       if (anno < 100) {
         anno += 2000;
       }
+      // Impostiamo l'ora di fine giornata (23:59:59) per includere il giorno corrente nel filtro
       return new Date(anno, mese, giorno, 23, 59, 59);
     }
 
@@ -522,7 +521,7 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
 
-      // Impostiamo l'inizio esatto della giornata odierna (00:00:00) per non escludere la partita di oggi
+      // Data odierna impostata all'inizio del giorno (00:00:00) per non escludere la partita di oggi
       const oggi = new Date();
       oggi.setHours(0, 0, 0, 0);
 
@@ -637,9 +636,9 @@
               const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               if (valori.length === 0) return;
               let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
-              let titolo = leggiValore(riga, 'titolo', 'title') || valori || 'Editoriale';
-              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori || '';
-              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori || '';
+              let titolo = leggiValore(riga, 'titolo', 'title') || valori[1] || 'Editoriale';
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori[2] || '';
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
               if (titolo) freschi.push({ data, titolo, p1, p2 });
             });
           }
@@ -664,10 +663,10 @@
               const valori = Object.keys(riga).filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               const titolo = leggiValore(riga, 'titolo', 'notizia') || valori[0];
               if (!titolo) return;
-              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori || 'Stampa';
-              const tempo = leggiValore(riga, 'tempo', 'data') || valori || 'Oggi';
-              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori || '';
-              const link = leggiValore(riga, 'link', 'url') || valori || '#';
+              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori[1] || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data') || valori[2] || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
+              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
               fresche.push({ titolo, fonte, tempo, riassunto, link });
             });
           }
@@ -688,7 +687,7 @@
               results.data.forEach(riga => {
                 if (!riga) return;
                 let pos = leggiValore(riga, 'pos.', 'pos', '#');
-                let squadra = leggiValore(riga, 'squadra', 'club');
+                let squadron = leggiValore(riga, 'squadra', 'club');
                 let pt = leggiValore(riga, 'pt', 'punti');
                 let g = leggiValore(riga, 'g', 'partite');
                 let v = leggiValore(riga, 'v', 'vinte');
@@ -696,17 +695,17 @@
                 let p = leggiValore(riga, 'p', 'perse');
                 let dr = leggiValore(riga, 'dr', 'diff');
                 const chiavi = Object.keys(riga);
-                if (!squadra && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadra = riga[chiavi]; pt = riga[chiavi];
-                  g = riga[chiavi]; v = riga[chiavi]; n = riga[chiavi];
-                  p = riga[chiavi]; dr = riga[chiavi] || riga[chiavi] || '0';
+                if (!squadron && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadron = riga[chiavi[1]]; pt = riga[chiavi[2]];
+                  g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
+                  p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-                if (squadra) {
-                  squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
-                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                if (squadron) {
+                  squadron = squadron.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadron.length > 2 && !squadron.toLowerCase().includes('retrocessione')) {
                     righe.push({
                       pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
-                      squadra: squadra,
+                      squadra: squadron,
                       pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
                       g: String(g || '0').replace(/\\\*/g, '').trim(),
                       v: String(v || '0').replace(/\\\*/g, '').trim(),
@@ -744,10 +743,10 @@
                 const rValori = rKeys.map(k => pulisciTesto(r[k]));
                 
                 let comp = (idxCompetizione !== -1) ? rValori[idxCompetizione] : rValori[0];
-                let avv  = (idxAvversario !== -1) ? rValori[idxAvversario] : rValori;
-                let luog = (idxLuogo !== -1) ? rValori[idxLuogo] : rValori;
-                let dat  = (idxData !== -1) ? rValori[idxData] : rValori;
-                let orar = (idxOrario !== -1) ? rValori[idxOrario] : rValori;
+                let avv  = (idxAvversario !== -1) ? rValori[idxAvversario] : rValori[1];
+                let luog = (idxLuogo !== -1) ? rValori[idxLuogo] : rValori[2];
+                let dat  = (idxData !== -1) ? rValori[idxData] : rValori[3];
+                let orar = (idxOrario !== -1) ? rValori[idxOrario] : rValori[4];
 
                 if (avv) {
                   avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '').trim();
@@ -812,7 +811,7 @@
         if (s.nota) {
           badge = '<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">' + s.nota + '</span>';
           if (s.nota.includes('Stella') || s.nota.includes('Triplete') || s.nota.includes('Leggenda')) {
-            borderClass = 'border-yellow-500/50 shadow-';
+            borderClass = 'border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.15)]';
           }
         }
         
@@ -892,6 +891,7 @@
   </script>
 </body>
 </html>
+
 
 
 
