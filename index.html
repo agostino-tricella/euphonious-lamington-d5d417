@@ -13,8 +13,8 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
 
   <!-- Meta Tag SEO Principali -->
-  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite, classifica Serie A e risultati storici.">
-  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter, risultati stagionali inter">
+  <meta name="description" content="Spazio indipendente e 100% privo di pubblicità invasiva dedicato all'Inter. Editoriale quotidiano del tifoso, ultime notizie in tempo reale, calendario partite, classifica Serie A e risultati stagionali.">
+  <meta name="keywords" content="Inter, FC Internazionale, notizie Inter, ultime notizie Inter, editoriale Inter, classifica Serie A, partite Inter, calendario Inter, storia Inter, risultati Inter">
   <meta name="author" content="Redazione Spazio Nerazzurro">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#00133e">
@@ -41,7 +41,7 @@
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito (Core Web Vitals) -->
+  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -85,7 +85,7 @@
         <button onclick="switchTab('partite')" id="tab-partite" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days mr-2"></i>Partite & Classifica
         </button>
-        <!-- TAB RISULTATI FUNZIONANTE ED AUTOMATICO -->
+        <!-- TAB RISULTATI FUNZIONANTE ED AUTOMATICO DA GOOGLE SHEET -->
         <button onclick="switchTab('risultati')" id="tab-risultati" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-square-poll-horizontal mr-2"></i>Risultati
         </button>
@@ -235,23 +235,21 @@
       </div>
     </section>
 
-    <!-- SEZIONE NUOVA RISULTATI: CORRETTA CON IFRAME SCOREAXIS (GARANTITO FUNZIONANTE) -->
+    <!-- SEZIONE NUOVA: RISULTATI STAGIONALI DITRIBUITI IN TEMPO REALE DAL TUO GOOGLE SHEET -->
     <section id="section-risultati" class="tab-content hidden">
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-white">Risultati Stagionali</h2>
-        <p class="text-sm text-slate-400">Tutti i punteggi, i marcatori e i dettagli dei match nerazzurri aggiornati automaticamente.</p>
+        <p class="text-sm text-slate-400">Punteggi, dettagli e marcatori di tutte le partite dell'Inter aggiornati in tempo reale dal tuo Google Sheet.</p>
       </div>
-
-      <div class="bg-inter-card border border-blue-900/40 rounded-xl p-2 md:p-4 shadow-lg">
-        <!-- Widget Iframe ScoreAxis: immune ai blocchi di sicurezza, sicuro ed estremamente rapido -->
-        <iframe 
-          src="https://www.scoreaxis.com/widget/team-results/1530?autoHeight=1&bodyBackground=%230b1a30&textColor=%23cbd5e1&font=sans-serif&links=0" 
-          style="width: 100%; border: none; transition: all 0.3s ease;" 
-          id="sa-iframe-risultati" 
-          height="650" 
-          title="Risultati Stagionali Inter Live">
-        </iframe>
+      
+      <div id="loader-risultati" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+        <div class="bg-inter-card border border-blue-900/30 rounded-xl p-5 space-y-3">
+          <div class="h-4 bg-slate-800 rounded w-20"></div>
+          <div class="h-6 bg-slate-800 rounded w-3/4"></div>
+          <div class="h-4 bg-slate-800 rounded w-1/2"></div>
+        </div>
       </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="risultati-grid"></div>
     </section>
 
     <!-- SEZIONE 5: ARCHIVIO STORICO & SCUDETTI -->
@@ -267,7 +265,7 @@
           <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
         </div>
         
-        <!-- Griglia Scudetti: su PC 7 colonne per avere 3 righe perfette -->
+        <!-- Griglia Scudetti -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
       </div>
       <div class="w-full h-px bg-slate-800/80 my-8"></div>
@@ -303,10 +301,15 @@
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
+    
+    // NUOVO LINK CORRETTO SINCRIZONATO SUL TUO TAB "Risultati" (GID: 896188335)
+    const urlRisultati  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=896188335&single=true&output=csv";
+
     let listaEditoriali = [];
     let notizieSalvate = [];
+    let risultatiStagionali = [];
 
-    // Partite base (caricate in caso di fallback offline o fusi orari bloccati)
+    // Partite base (caricate in caso di fallback offline)
     let prossimePartite = [
       { competizione: "Champions League", avversario: "Stoccarda", luogo: "San Siro", data: "25/11/2026", orario: "21:00" },
       { competizione: "Campionato", avversario: "Genoa", luogo: "San Siro", data: "28/11/2026", orario: "20:45" },
@@ -495,21 +498,23 @@
       }
     }
 
-    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CORRETTO E STABILE)
+    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CORRETTO E STABILE!)
     function parseDataItaliana(strData) {
       if (!strData) return null;
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
       
-      const giorno = parseInt(parti[0], 10);
-      const mese = parseInt(parti[1], 10) - 1; // Gennaio = 0, Dicembre = 11
-      let anno = parseInt(parti[2], 10);
+      const giorno = parseInt(parti[0].trim(), 10);
+      const mese = parseInt(parti[1].trim(), 10) - 1; // Gennaio = 0, Dicembre = 11
+      let anno = parseInt(parti[2].trim(), 10);
       
       if (isNaN(giorno) || isNaN(mese) || isNaN(anno)) return null;
 
+      // Auto-correzione se l'anno è scritto a due cifre (es. "26" -> "2026")
       if (anno < 100) {
         anno += 2000;
       }
+      // Impostiamo l'ora di fine giornata (23:59:59) per includere la partita di oggi nel filtro
       return new Date(anno, mese, giorno, 23, 59, 59);
     }
 
@@ -518,16 +523,18 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
 
+      // Data odierna impostata all'inizio del giorno (00:00:00) per non escludere la partita di oggi
       const oggi = new Date();
       oggi.setHours(0, 0, 0, 0);
 
+      // Filtro dinamico per mostrare solo i match da oggi in poi ordinati cronologicamente
       const filtrate = prossimePartite
         .filter(p => {
           const dataMatch = parseDataItaliana(p.data);
           return dataMatch !== null && dataMatch >= oggi;
         })
         .sort((a, b) => parseDataItaliana(a.data) - parseDataItaliana(b.data))
-        .slice(0, 3); // Prende le prime 3 partite in arrivo
+        .slice(0, 3); // Prende le prime 3 in arrivo
 
       if (filtrate.length === 0) {
         partiteContainer.innerHTML = `
@@ -566,6 +573,82 @@
         `;
         partiteContainer.appendChild(card);
       });
+    }
+
+    // RENDERING NUOVA SEZIONE RISULTATI (GENERAZIONE TOTALMENTE NATIVA E ROBUSTA DA GOOGLE SHEET)
+    function renderRisultati() {
+      const risultatiContainer = document.getElementById('risultati-grid');
+      const loader = document.getElementById('loader-risultati');
+      if (!risultatiContainer) return;
+      risultatiContainer.innerHTML = '';
+
+      // Ordiniamo i risultati dal più recente al più vecchio
+      const ordinati = risultatiStagionali.sort((a, b) => parseDataItaliana(b.data) - parseDataItaliana(a.data));
+
+      if (ordinati.length === 0) {
+        risultatiContainer.innerHTML = `
+          <div class="col-span-3 text-center text-slate-500 py-8">
+            <i class="fa-solid fa-info-circle mr-2"></i> Nessun risultato inserito in archivio.
+          </div>
+        `;
+        if (loader) loader.classList.add('hidden');
+        risultatiContainer.classList.remove('hidden');
+        return;
+      }
+
+      ordinati.forEach(r => {
+        const tRisultato = r.risultato.split('-');
+        const golInter = r.luogo.toLowerCase().includes('casa') ? parseInt(tRisultato[0], 10) : parseInt(tRisultato[1], 10);
+        const golAvv = r.luogo.toLowerCase().includes('casa') ? parseInt(tRisultato[1], 10) : parseInt(tRisultato[0], 10);
+        
+        let esitoColor = "border-slate-800";
+        let badgeEsito = "N";
+        let badgeColor = "bg-slate-700 text-slate-100";
+
+        if (golInter > golAvv) {
+          esitoColor = "border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.1)]";
+          badgeEsito = "V";
+          badgeColor = "bg-emerald-600 text-white";
+        } else if (golInter < golAvv) {
+          esitoColor = "border-rose-500/40";
+          badgeEsito = "P";
+          badgeColor = "bg-rose-600 text-white";
+        }
+
+        const isUcl = (r.competizione || '').toLowerCase().includes('champions');
+        const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
+
+        const card = document.createElement('div');
+        card.className = `bg-inter-card border ${esitoColor} rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs border px-2 py-0.5 rounded font-semibold ${badgeStyle}">${r.competizione}</span>
+            <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${r.data}</span>
+          </div>
+          <div class="flex items-center justify-between my-3">
+            <div class="flex flex-col">
+              <span class="text-lg font-bold text-white">${r.luogo.toLowerCase().includes('casa') ? 'INTER' : r.avversario}</span>
+              <span class="text-xs text-slate-400">${r.luogo.toLowerCase().includes('casa') ? 'Casa' : 'Trasferta'}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-black text-white px-3 py-1 bg-slate-900 rounded-lg">${r.risultato}</span>
+              <span class="w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${badgeColor}">${badgeEsito}</span>
+            </div>
+            <div class="flex flex-col text-right">
+              <span class="text-lg font-bold text-white">${r.luogo.toLowerCase().includes('casa') ? r.avversario : 'INTER'}</span>
+              <span class="text-xs text-slate-400">${r.luogo.toLowerCase().includes('casa') ? 'Trasferta' : 'Casa'}</span>
+            </div>
+          </div>
+          <div class="pt-3 border-t border-slate-800/60 mt-4 text-xs">
+            <span class="text-slate-500 block mb-1 font-semibold"><i class="fa-solid fa-futbol mr-1 text-yellow-500"></i> Marcatori:</span>
+            <span class="text-slate-300 italic block leading-relaxed">${r.marcatori || 'Nessun marcatore'}</span>
+          </div>
+        `;
+        risultatiContainer.appendChild(card);
+      });
+
+      if (loader) loader.classList.add('hidden');
+      risultatiContainer.classList.remove('hidden');
     }
 
     function renderTabellaClassifica(dati) {
@@ -717,7 +800,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE (Sincronizzazione dinamica basata su mappatura posizionale)
+      // 4. PARTITE (Sincronizzazione dinamica basata su mappatura posizionale per evitare spazi vuoti)
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -766,118 +849,61 @@
           }});
         }).catch(e => {});
       }
-    }
 
-    // -------------------------------------------------------------
-    // ALBO D'ORO SCUDETTI
-    // -------------------------------------------------------------
-    const scudettiData = [
-      { num: 1, anno: "1909-10", mister: "Virgilio Fossati", bomber: "Peterly (25)" },
-      { num: 2, anno: "1919-20", mister: "Resegotti", bomber: "Aebi (19)" },
-      { num: 3, anno: "1929-30", mister: "Árpád Weisz", bomber: "Meazza (31)" },
-      { num: 4, anno: "1937-38", mister: "A. Castellazzi", bomber: "Meazza (20)" },
-      { num: 5, anno: "1939-40", mister: "Tony Cargnelli", bomber: "Guarnieri (15)" },
-      { num: 6, anno: "1952-53", mister: "Alfredo Foni", bomber: "Nyers (15)" },
-      { num: 7, anno: "1953-54", mister: "Alfredo Foni", bomber: "Skoglund (11)" },
-      { num: 8, anno: "1962-63", mister: "Helenio Herrera", bomber: "Di Giacomo (11)" },
-      { num: 9, anno: "1964-65", mister: "Helenio Herrera", bomber: "Mazzola (17)" },
-      { num: 10, anno: "1965-66", mister: "Helenio Herrera", bomber: "Mazzola (11)", nota: "⭐ 1a Stella" },
-      { num: 11, anno: "1970-71", mister: "G. Invernizzi", bomber: "Boninsegna (24)" },
-      { num: 12, anno: "1979-80", mister: "E. Bersellini", bomber: "Altobelli (15)" },
-      { num: 13, anno: "1988-89", mister: "G. Trapattoni", bomber: "Serena (22)", nota: "Record" },
-      { num: 14, anno: "2005-06", mister: "Roberto Mancini", bomber: "Cruz (15)" },
-      { num: 15, anno: "2006-07", mister: "Roberto Mancini", bomber: "Ibrahimović (15)" },
-      { num: 16, anno: "2007-08", mister: "Roberto Mancini", bomber: "Ibrahimović (17)" },
-      { num: 17, anno: "2008-09", mister: "José Mourinho", bomber: "Ibrahimović (25)" },
-      { num: 18, anno: "2009-10", mister: "José Mourinho", bomber: "Milito (22)", nota: "🏆 Triplete" },
-      { num: 19, anno: "2020-21", mister: "Antonio Conte", bomber: "Lukaku (24)" },
-      { num: 20, anno: "2023-24", mister: "Simone Inzaghi", bomber: "Martínez (24)", nota: "⭐⭐ 2a Stella" },
-      { num: 21, anno: "2025-26", mister: "Christian Chivu", bomber: "Martínez (26)", nota: "Leggenda" }
-    ];
+      // 5. RISULTATI (Sincronizzazione dinamica dal tuo tab GID 896188335)
+      if (urlRisultati && urlRisultati.startsWith('http')) {
+        fetchSicuro(urlRisultati).then(csvText => {
+          Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
+            if (results.data && results.data.length > 0) {
+              const risultatiLetti = [];
+              const primeRighe = results.data[0];
+              const keys = Object.keys(primeRighe).map(k => k.trim().toLowerCase());
 
-    function renderScudetti() {
-      const container = document.getElementById('scudetti-grid');
-      if (!container) return;
-      container.innerHTML = '';
-      scudettiData.forEach(s => {
-        let badge = '';
-        let borderClass = 'border-blue-900/40 hover:border-blue-500/50';
-        
-        if (s.nota) {
-          badge = '<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">' + s.nota + '</span>';
-          if (s.nota.includes('Stella') || s.nota.includes('Triplete') || s.nota.includes('Leggenda')) {
-            borderClass = 'border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.15)]';
-          }
-        }
-        
-        container.innerHTML += `
-          <div class="bg-inter-card border ${borderClass} rounded-xl p-3 flex flex-col items-center text-center relative transition group cursor-default">
-            ${badge}
-            <div class="text-[32px] leading-none font-black text-white/5 absolute top-2 right-2 select-none">${s.num}</div>
-            
-            <div class="scudetto-icon mb-1.5">
-              <div class="w-1/3 h-full bg-green-600"></div>
-              <div class="w-1/3 h-full bg-white"></div>
-              <div class="w-1/3 h-full bg-red-600"></div>
-            </div>
-            
-            <h4 class="font-black text-white text-base tracking-widest mb-1 z-10">${s.anno}</h4>
-            <div class="w-6 h-[2px] bg-yellow-500/60 mb-1.5 z-10"></div>
-            
-            <p class="text-[10px] text-slate-300 mb-0.5 z-10 w-full truncate"><span class="text-slate-500">Mister:</span> ${s.mister}</p>
-            <p class="text-[10px] text-yellow-400 font-semibold z-10 w-full truncate"><i class="fa-solid fa-futbol text-[9px] mr-1"></i>${s.bomber}</p>
-          </div>
-        `;
-      });
-    }
+              const idxData = keys.findIndex(k => k.includes('data'));
+              const idxCompetizione = keys.findIndex(k => k.includes('competizione') || k.includes('torneo'));
+              const idxAvversario = keys.findIndex(k => k.includes('avversario') || k.includes('squadra'));
+              const idxRisultato = keys.findIndex(k => k.includes('risultato') || k.includes('punteggio'));
+              const idxMarcatori = keys.findIndex(k => k.includes('marcatori') || k.includes('gol'));
+              const idxLuogo = keys.findIndex(k => k.includes('luogo'));
 
-    // -------------------------------------------------------------
-    // RICERCA ARCHIVIO STORICO
-    // -------------------------------------------------------------
-    const datiStorici = [
-      { anno: "1908", titolo: "La Fondazione", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
-      { anno: "1964 - 1965", titolo: "La Grande Inter", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
-      { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
-      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" }
-    ];
+              results.data.forEach(r => {
+                if (!r) return;
+                const rKeys = Object.keys(r);
+                const rValori = rKeys.map(k => pulisciTesto(r[k]));
 
-    function renderHistory(items) {
-      const container = document.getElementById('history-container');
-      const noResults = document.getElementById('no-results');
-      if (!container) return;
-      container.innerHTML = '';
-      if (items.length === 0) { 
-        if (noResults) noResults.classList.remove('hidden'); 
-        return; 
+                let dat  = (idxData !== -1) ? rValori[idxData] : rValori[0];
+                let comp = (idxCompetizione !== -1) ? rValori[idxCompetizione] : rValori[1];
+                let avv  = (idxAvversario !== -1) ? rValori[idxAvversario] : rValori[2];
+                let ris  = (idxRisultato !== -1) ? rValori[idxRisultato] : rValori[3];
+                let marc = (idxMarcatori !== -1) ? rValori[idxMarcatori] : rValori[4];
+                let luog = (idxLuogo !== -1) ? rValori[idxLuogo] : rValori[5];
+
+                if (avv && ris) {
+                  risultatiLetti.push({
+                    data: dat,
+                    competizione: comp || 'Serie A',
+                    avversario: avv,
+                    risultato: ris,
+                    marcatori: marc || '',
+                    luogo: luog || 'Casa'
+                  });
+                }
+              });
+
+              if (risultatiLetti.length > 0) {
+                risultatiStagionali = risultatiLetti;
+                salvaInCache('risultati', risultatiStagionali);
+                renderRisultati();
+              }
+            }
+          }});
+        }).catch(e => {});
       }
-      if (noResults) noResults.classList.add('hidden');
-      items.forEach(item => {
-        container.innerHTML += `
-          <div class="bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between">
-            <div>
-              <div class="flex justify-between items-baseline mb-2">
-                <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
-                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
-              </div>
-              <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
-              <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-slate-800/60">
-              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
-                Approfondisci su Wikipedia <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
-              </a>
-            </div>
-          </div>
-        `;
-      });
     }
 
-    function filtraStoria() {
-      const q = document.getElementById('historySearch').value.toLowerCase();
-      renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
-    }
-
-    // Avvio sequenza
+    // =========================================================================
+    // AVVIO SEQUENZA DI CARICAMENTO SITO
+    // =========================================================================
     renderScudetti();
     renderPartite();
     renderHistory(datiStorici);
@@ -886,6 +912,7 @@
   </script>
 </body>
 </html>
+
 
 
 
