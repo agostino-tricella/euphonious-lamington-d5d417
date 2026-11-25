@@ -41,7 +41,6 @@
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -69,11 +68,11 @@
           IM
         </div>
         <div>
-          <!-- Ottimizzazione SEO: div anziché h1 nell'header -->
           <div class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></div>
           <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
       </div>
+
       <!-- Navigazione Schede -->
       <nav class="flex gap-2 bg-slate-900/60 p-1.5 rounded-xl border border-blue-900/40 text-sm overflow-x-auto w-full md:w-auto">
         <button onclick="switchTab('editoriale')" id="tab-editoriale" class="nav-btn px-4 py-2 rounded-lg font-medium transition bg-blue-700 text-white shadow whitespace-nowrap">
@@ -85,7 +84,6 @@
         <button onclick="switchTab('partite')" id="tab-partite" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days mr-2"></i>Partite & Classifica
         </button>
-        <!-- TAB RISULTATI FUNZIONANTE ED AUTOMATICO DA GOOGLE SHEET -->
         <button onclick="switchTab('risultati')" id="tab-risultati" class="nav-btn px-4 py-2 rounded-lg font-medium transition text-slate-300 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-square-poll-horizontal mr-2"></i>Risultati
         </button>
@@ -98,6 +96,7 @@
 
   <!-- Contenuto Principale -->
   <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+
     <!-- SEZIONE 1: EDITORIALE & ARCHIVIO -->
     <section id="section-editoriale" class="tab-content">
       <div id="avviso-archivio" class="hidden mb-4 p-3 bg-blue-950/80 border border-yellow-500/50 rounded-xl flex items-center justify-between text-xs text-yellow-300 shadow">
@@ -109,6 +108,7 @@
           Torna all'ultimo editoriale di oggi &rarr;
         </button>
       </div>
+
       <div class="bg-inter-card border border-blue-900/50 rounded-2xl p-6 md:p-10 shadow-xl relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -129,13 +129,14 @@
             <div class="h-4 bg-slate-800/50 rounded w-5/6"></div>
           </div>
         </div>
+
         <div id="contenuto-editoriale" class="hidden">
-          <!-- Ottimizzazione SEO: Il titolo dell'articolo principale diventa H1 -->
           <h1 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h1>
           <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
             <p id="editoriale-p1"></p>
             <p id="editoriale-p2"></p>
           </div>
+
           <div class="mt-8 pt-5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
             <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
               <i class="fa-solid fa-share-nodes text-yellow-500"></i> Condividi editoriale:
@@ -153,11 +154,13 @@
             </div>
           </div>
         </div>
+
         <div class="mt-6 pt-5 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
           <span>A cura della Redazione</span>
           <span>Spazio libero da pubblicità</span>
         </div>
       </div>
+
       <div id="sezione-archivio-editoriali" class="mt-10 hidden">
         <div class="mb-4 flex items-center gap-2">
           <i class="fa-solid fa-box-archive text-yellow-500 text-lg"></i>
@@ -184,6 +187,7 @@
           <div class="h-3 bg-slate-800/60 rounded w-2/3"></div>
         </div>
       </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden" id="news-grid"></div>
     </section>
 
@@ -196,6 +200,7 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="partite-grid"></div>
       </div>
+
       <div>
         <div class="mb-4 flex items-center justify-between">
           <div>
@@ -207,6 +212,7 @@
             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Europa League</span>
           </div>
         </div>
+
         <div class="bg-inter-card border border-blue-900/40 rounded-xl overflow-hidden shadow">
           <div id="loader-classifica" class="p-6 space-y-3 animate-pulse">
             <div class="h-4 bg-slate-800/80 rounded w-full"></div>
@@ -214,6 +220,7 @@
             <div class="h-4 bg-slate-800/50 rounded w-full"></div>
             <div class="h-4 bg-slate-800/40 rounded w-full"></div>
           </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-300 hidden" id="classifica-tabella">
               <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-blue-900/40">
@@ -235,11 +242,11 @@
       </div>
     </section>
 
-    <!-- SEZIONE NUOVA: RISULTATI STAGIONALI DITRIBUITI IN TEMPO REALE DAL TUO GOOGLE SHEET -->
+    <!-- SEZIONE 4: RISULTATI STAGIONALI -->
     <section id="section-risultati" class="tab-content hidden">
       <div class="mb-6">
         <h2 class="text-2xl font-bold text-white">Risultati Stagionali</h2>
-        <p class="text-sm text-slate-400">Punteggi, dettagli e marcatori di tutte le partite dell'Inter aggiornati in tempo reale dal tuo Google Sheet.</p>
+        <p class="text-sm text-slate-400">Punteggi, dettagli e marcatori delle partite dell'Inter aggiornati dal foglio Google.</p>
       </div>
       
       <div id="loader-risultati" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
@@ -254,7 +261,6 @@
 
     <!-- SEZIONE 5: ARCHIVIO STORICO & SCUDETTI -->
     <section id="section-storia" class="tab-content hidden">
-      <!-- L'Albo d'Oro dei 21 Scudetti -->
       <div class="mb-14">
         <div class="text-center mb-8">
           <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-widest flex items-center justify-center gap-3">
@@ -265,11 +271,11 @@
           <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
         </div>
         
-        <!-- Griglia Scudetti -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
       </div>
+
       <div class="w-full h-px bg-slate-800/80 my-8"></div>
-      <!-- Ricerca Eventi Storici -->
+
       <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold">Momenti Leggendari</h2>
@@ -301,25 +307,18 @@
     const urlNews       = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=0&single=true&output=csv";
     const urlClassifica = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=800691554&single=true&output=csv";
     const urlPartite    = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=1758756015&single=true&output=csv";
-    
-    // NUOVO LINK CORRETTO SINCRIZONATO SUL TUO TAB "Risultati" (GID: 896188335)
     const urlRisultati  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSn62RF4Iy-127UzyzGKApuvB8EjgE2O7k8zvv52EqHNfE-ph7FwbPb1xTQOBJEw_4bWo1zbOi0iDyx/pub?gid=896188335&single=true&output=csv";
 
     let listaEditoriali = [];
     let notizieSalvate = [];
     let risultatiStagionali = [];
 
-    // Partite base (caricate in caso di fallback offline)
     let prossimePartite = [
       { competizione: "Champions League", avversario: "Stoccarda", luogo: "San Siro", data: "25/11/2026", orario: "21:00" },
       { competizione: "Campionato", avversario: "Genoa", luogo: "San Siro", data: "28/11/2026", orario: "20:45" },
-      { competizione: "Coppa Italia", avversario: "Genoa", luogo: "San Siro", data: "01/12/2026", orario: "21:00" },
-      { competizione: "Campionato", avversario: "Frosinone", luogo: "Frosinone", data: "05/12/2026", orario: "18:00" },
-      { competizione: "Champions League", avversario: "Borussia Dortmund", luogo: "Dortmund", data: "09/12/2026", orario: "21:00" },
-      { competizione: "Campionato", avversario: "Torino", luogo: "San Siro", data: "13/12/2026", orario: "15:00" }
+      { competizione: "Coppa Italia", avversario: "Genoa", luogo: "San Siro", data: "01/12/2026", orario: "21:00" }
     ];
 
-    // Navigazione tabs
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -335,7 +334,6 @@
       }
     }
 
-    // Gestione Cache Locale
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
@@ -379,7 +377,6 @@
         });
     }
 
-    // Condivisione
     function getShareText() {
       const ed = listaEditoriali[0] || {};
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
@@ -498,24 +495,23 @@
       }
     }
 
-    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CORRETTO E STABILE!)
     function parseDataItaliana(strData) {
       if (!strData) return null;
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
       
       const giorno = parseInt(parti[0].trim(), 10);
-      const mese = parseInt(parti[1].trim(), 10) - 1; // Gennaio = 0, Dicembre = 11
+      const mese = parseInt(parti[1].trim(), 10) - 1;
       let anno = parseInt(parti[2].trim(), 10);
       
       if (isNaN(giorno) || isNaN(mese) || isNaN(anno)) return null;
-
-      // Auto-correzione se l'anno è scritto a due cifre (es. "26" -> "2026")
-      if (anno < 100) {
-        anno += 2000;
-      }
-      // Impostiamo l'ora di fine giornata (23:59:59) per includere la partita di oggi nel filtro
+      if (anno < 100) anno += 2000;
       return new Date(anno, mese, giorno, 23, 59, 59);
+    }
+
+    function isMatchCasa(luogo) {
+      const t = (luogo || '').toLowerCase();
+      return t.includes('casa') || t.includes('san siro') || t.includes('meazza') || t.includes('milano');
     }
 
     function renderPartite() {
@@ -523,18 +519,16 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
 
-      // Data odierna impostata all'inizio del giorno (00:00:00) per non escludere la partita di oggi
       const oggi = new Date();
       oggi.setHours(0, 0, 0, 0);
 
-      // Filtro dinamico per mostrare solo i match da oggi in poi ordinati cronologicamente
       const filtrate = prossimePartite
         .filter(p => {
           const dataMatch = parseDataItaliana(p.data);
           return dataMatch !== null && dataMatch >= oggi;
         })
         .sort((a, b) => parseDataItaliana(a.data) - parseDataItaliana(b.data))
-        .slice(0, 3); // Prende le prime 3 in arrivo
+        .slice(0, 3);
 
       if (filtrate.length === 0) {
         partiteContainer.innerHTML = `
@@ -548,12 +542,12 @@
       filtrate.forEach(p => {
         const isUcl = (p.competizione || '').toLowerCase().includes('champions');
         const badgeStyle = isUcl ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-blue-600/20 text-blue-400 border-blue-500/30';
-        const tLuogo = (p.luogo || '').toLowerCase();
-        const isCasa = tLuogo.includes('san siro') || tLuogo.includes('meazza') || tLuogo.startsWith('casa');
-        const squadraCasa = isCasa ? 'INTER' : p.avversario;
-        const squadraTrasferta = isCasa ? p.avversario : 'INTER';
-        const stileCasa = isCasa ? 'text-white font-extrabold' : 'text-slate-300 font-bold';
-        const stileTrasferta = isCasa ? 'text-slate-300 font-bold' : 'text-white font-extrabold';
+        const casa = isMatchCasa(p.luogo);
+        const squadraCasa = casa ? 'INTER' : p.avversario;
+        const squadraTrasferta = casa ? p.avversario : 'INTER';
+        const stileCasa = casa ? 'text-white font-extrabold' : 'text-slate-300 font-bold';
+        const stileTrasferta = casa ? 'text-slate-300 font-bold' : 'text-white font-extrabold';
+
         const card = document.createElement('div');
         card.className = "bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition shadow relative overflow-hidden";
         card.innerHTML = `
@@ -568,22 +562,27 @@
           </div>
           <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
             <span><i class="fa-regular fa-calendar mr-1"></i>${p.data}</span>
-            <span><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${p.luogo || (isCasa ? 'San Siro' : 'Trasferta')}</span>
+            <span><i class="fa-solid fa-location-dot mr-1 text-slate-500"></i>${p.luogo || (casa ? 'San Siro' : 'Trasferta')}</span>
           </div>
         `;
         partiteContainer.appendChild(card);
       });
     }
 
-    // RENDERING NUOVA SEZIONE RISULTATI (GENERAZIONE TOTALMENTE NATIVA E ROBUSTA DA GOOGLE SHEET)
     function renderRisultati() {
       const risultatiContainer = document.getElementById('risultati-grid');
       const loader = document.getElementById('loader-risultati');
       if (!risultatiContainer) return;
       risultatiContainer.innerHTML = '';
 
-      // Ordiniamo i risultati dal più recente al più vecchio
-      const ordinati = risultatiStagionali.sort((a, b) => parseDataItaliana(b.data) - parseDataItaliana(a.data));
+      const ordinati = [...risultatiStagionali].sort((a, b) => {
+        const da = parseDataItaliana(a.data);
+        const db = parseDataItaliana(b.data);
+        if (!da && !db) return 0;
+        if (!da) return 1;
+        if (!db) return -1;
+        return db - da;
+      });
 
       if (ordinati.length === 0) {
         risultatiContainer.innerHTML = `
@@ -597,22 +596,28 @@
       }
 
       ordinati.forEach(r => {
-        const tRisultato = r.risultato.split('-');
-        const golInter = r.luogo.toLowerCase().includes('casa') ? parseInt(tRisultato[0], 10) : parseInt(tRisultato[1], 10);
-        const golAvv = r.luogo.toLowerCase().includes('casa') ? parseInt(tRisultato[1], 10) : parseInt(tRisultato[0], 10);
-        
+        const partiRis = String(r.risultato || '').split(/[-–:]/);
+        const golSinistra = parseInt(partiRis[0], 10);
+        const golDestra = parseInt(partiRis[1], 10);
+        const casa = isMatchCasa(r.luogo);
+
+        const golInter = casa ? golSinistra : golDestra;
+        const golAvv = casa ? golDestra : golSinistra;
+
         let esitoColor = "border-slate-800";
         let badgeEsito = "N";
         let badgeColor = "bg-slate-700 text-slate-100";
 
-        if (golInter > golAvv) {
-          esitoColor = "border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.1)]";
-          badgeEsito = "V";
-          badgeColor = "bg-emerald-600 text-white";
-        } else if (golInter < golAvv) {
-          esitoColor = "border-rose-500/40";
-          badgeEsito = "P";
-          badgeColor = "bg-rose-600 text-white";
+        if (!isNaN(golInter) && !isNaN(golAvv)) {
+          if (golInter > golAvv) {
+            esitoColor = "border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.1)]";
+            badgeEsito = "V";
+            badgeColor = "bg-emerald-600 text-white";
+          } else if (golInter < golAvv) {
+            esitoColor = "border-rose-500/40";
+            badgeEsito = "P";
+            badgeColor = "bg-rose-600 text-white";
+          }
         }
 
         const isUcl = (r.competizione || '').toLowerCase().includes('champions');
@@ -625,18 +630,18 @@
             <span class="text-xs border px-2 py-0.5 rounded font-semibold ${badgeStyle}">${r.competizione}</span>
             <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${r.data}</span>
           </div>
-          <div class="flex items-center justify-between my-3">
+          <div class="flex items-center justify-between my-3 gap-2">
             <div class="flex flex-col">
-              <span class="text-lg font-bold text-white">${r.luogo.toLowerCase().includes('casa') ? 'INTER' : r.avversario}</span>
-              <span class="text-xs text-slate-400">${r.luogo.toLowerCase().includes('casa') ? 'Casa' : 'Trasferta'}</span>
+              <span class="text-base font-bold text-white">${casa ? 'INTER' : r.avversario}</span>
+              <span class="text-xs text-slate-400">${casa ? 'Casa' : 'Trasferta'}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-black text-white px-3 py-1 bg-slate-900 rounded-lg">${r.risultato}</span>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-xl font-black text-white px-3 py-1 bg-slate-900 rounded-lg">${r.risultato}</span>
               <span class="w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${badgeColor}">${badgeEsito}</span>
             </div>
             <div class="flex flex-col text-right">
-              <span class="text-lg font-bold text-white">${r.luogo.toLowerCase().includes('casa') ? r.avversario : 'INTER'}</span>
-              <span class="text-xs text-slate-400">${r.luogo.toLowerCase().includes('casa') ? 'Trasferta' : 'Casa'}</span>
+              <span class="text-base font-bold text-white">${casa ? r.avversario : 'INTER'}</span>
+              <span class="text-xs text-slate-400">${casa ? 'Trasferta' : 'Casa'}</span>
             </div>
           </div>
           <div class="pt-3 border-t border-slate-800/60 mt-4 text-xs">
@@ -700,6 +705,8 @@
       if (partiteCache && partiteCache.length > 0) { prossimePartite = partiteCache; renderPartite(); }
       const classificaCache = leggiDaCache('classifica');
       if (classificaCache && classificaCache.length > 0) renderTabellaClassifica(classificaCache);
+      const risultatiCache = leggiDaCache('risultati');
+      if (risultatiCache && risultatiCache.length > 0) { risultatiStagionali = risultatiCache; renderRisultati(); }
     }
 
     function sincronizzaConGoogle() {
@@ -779,17 +786,17 @@
                   p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
                 if (squadra) {
-                  squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                  squadra = squadra.replace(/[\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
                   if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
                     righe.push({
-                      pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
+                      pos: parseInt(String(pos).replace(/[\*\.]/g, '')) || (righe.length + 1),
                       squadra: squadra,
-                      pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
-                      g: String(g || '0').replace(/\\\*/g, '').trim(),
-                      v: String(v || '0').replace(/\\\*/g, '').trim(),
-                      n: String(n || '0').replace(/\\\*/g, '').trim(),
-                      p: String(p || '0').replace(/\\\*/g, '').trim(),
-                      dr: String(dr || '0').replace(/\\\*/g, '').trim()
+                      pt: String(pt || '0').replace(/[\*\.]/g, '').trim(),
+                      g: String(g || '0').replace(/\*/g, '').trim(),
+                      v: String(v || '0').replace(/\*/g, '').trim(),
+                      n: String(n || '0').replace(/\*/g, '').trim(),
+                      p: String(p || '0').replace(/\*/g, '').trim(),
+                      dr: String(dr || '0').replace(/\*/g, '').trim()
                     });
                   }
                 }
@@ -800,7 +807,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE (Sincronizzazione dinamica basata su mappatura posizionale per evitare spazi vuoti)
+      // 4. PARTITE
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -850,7 +857,7 @@
         }).catch(e => {});
       }
 
-      // 5. RISULTATI (Sincronizzazione dinamica dal tuo tab GID 896188335)
+      // 5. RISULTATI
       if (urlRisultati && urlRisultati.startsWith('http')) {
         fetchSicuro(urlRisultati).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -864,7 +871,7 @@
               const idxAvversario = keys.findIndex(k => k.includes('avversario') || k.includes('squadra'));
               const idxRisultato = keys.findIndex(k => k.includes('risultato') || k.includes('punteggio'));
               const idxMarcatori = keys.findIndex(k => k.includes('marcatori') || k.includes('gol'));
-              const idxLuogo = keys.findIndex(k => k.includes('luogo'));
+              const idxLuogo = keys.findIndex(k => k.includes('luogo') || k.includes('stadio'));
 
               results.data.forEach(r => {
                 if (!r) return;
@@ -880,7 +887,7 @@
 
                 if (avv && ris) {
                   risultatiLetti.push({
-                    data: dat,
+                    data: dat || '',
                     competizione: comp || 'Serie A',
                     avversario: avv,
                     risultato: ris,
@@ -894,16 +901,126 @@
                 risultatiStagionali = risultatiLetti;
                 salvaInCache('risultati', risultatiStagionali);
                 renderRisultati();
+              } else {
+                renderRisultati();
               }
             }
           }});
-        }).catch(e => {});
+        }).catch(e => { renderRisultati(); });
       }
     }
 
-    // =========================================================================
-    // AVVIO SEQUENZA DI CARICAMENTO SITO
-    // =========================================================================
+    // -------------------------------------------------------------
+    // ALBO D'ORO 21 SCUDETTI
+    // -------------------------------------------------------------
+    const scudettiData = [
+      { num: 1, anno: "1909-10", mister: "Virgilio Fossati", bomber: "Peterly (25)" },
+      { num: 2, anno: "1919-20", mister: "Resegotti", bomber: "Aebi (19)" },
+      { num: 3, anno: "1929-30", mister: "Árpád Weisz", bomber: "Meazza (31)" },
+      { num: 4, anno: "1937-38", mister: "A. Castellazzi", bomber: "Meazza (20)" },
+      { num: 5, anno: "1939-40", mister: "Tony Cargnelli", bomber: "Guarnieri (15)" },
+      { num: 6, anno: "1952-53", mister: "Alfredo Foni", bomber: "Nyers (15)" },
+      { num: 7, anno: "1953-54", mister: "Alfredo Foni", bomber: "Skoglund (11)" },
+      { num: 8, anno: "1962-63", mister: "Helenio Herrera", bomber: "Di Giacomo (11)" },
+      { num: 9, anno: "1964-65", mister: "Helenio Herrera", bomber: "Mazzola (17)" },
+      { num: 10, anno: "1965-66", mister: "Helenio Herrera", bomber: "Mazzola (11)", nota: "⭐ 1a Stella" },
+      { num: 11, anno: "1970-71", mister: "G. Invernizzi", bomber: "Boninsegna (24)" },
+      { num: 12, anno: "1979-80", mister: "E. Bersellini", bomber: "Altobelli (15)" },
+      { num: 13, anno: "1988-89", mister: "G. Trapattoni", bomber: "Serena (22)", nota: "Record" },
+      { num: 14, anno: "2005-06", mister: "Roberto Mancini", bomber: "Cruz (15)" },
+      { num: 15, anno: "2006-07", mister: "Roberto Mancini", bomber: "Ibrahimović (15)" },
+      { num: 16, anno: "2007-08", mister: "Roberto Mancini", bomber: "Ibrahimović (17)" },
+      { num: 17, anno: "2008-09", mister: "José Mourinho", bomber: "Ibrahimović (25)" },
+      { num: 18, anno: "2009-10", mister: "José Mourinho", bomber: "Milito (22)", nota: "🏆 Triplete" },
+      { num: 19, anno: "2020-21", mister: "Antonio Conte", bomber: "Lukaku (24)" },
+      { num: 20, anno: "2023-24", mister: "Simone Inzaghi", bomber: "Martínez (24)", nota: "⭐⭐ 2a Stella" },
+      { num: 21, anno: "2025-26", mister: "Cristian Chivu", bomber: "Martínez (26)", nota: "Leggenda" }
+    ];
+
+    function renderScudetti() {
+      const container = document.getElementById('scudetti-grid');
+      if (!container) return;
+      container.innerHTML = '';
+      scudettiData.forEach(s => {
+        let badge = '';
+        let borderClass = 'border-blue-900/40 hover:border-blue-500/50';
+        
+        if (s.nota) {
+          badge = `<span class="absolute -top-2 -right-2 bg-yellow-500 text-slate-900 text-[9px] font-black px-1.5 py-0.5 rounded shadow-lg border border-yellow-300 z-10 uppercase tracking-tight">${s.nota}</span>`;
+          if (s.nota.includes('Stella') || s.nota.includes('Triplete') || s.nota.includes('Leggenda')) {
+            borderClass = 'border-yellow-500/50 shadow-[0_0_12px_rgba(234,179,8,0.15)]';
+          }
+        }
+        
+        container.innerHTML += `
+          <div class="bg-inter-card border ${borderClass} rounded-xl p-3 flex flex-col items-center text-center relative transition group cursor-default">
+            ${badge}
+            <div class="text-[32px] leading-none font-black text-white/5 absolute top-2 right-2 select-none">${s.num}</div>
+            
+            <div class="scudetto-icon mb-1.5">
+              <div class="w-1/3 h-full bg-green-600"></div>
+              <div class="w-1/3 h-full bg-white"></div>
+              <div class="w-1/3 h-full bg-red-600"></div>
+            </div>
+            
+            <h4 class="font-black text-white text-base tracking-widest mb-1 z-10">${s.anno}</h4>
+            <div class="w-6 h-[2px] bg-yellow-500/60 mb-1.5 z-10"></div>
+            
+            <p class="text-[10px] text-slate-300 mb-0.5 z-10 w-full truncate"><span class="text-slate-500">Mister:</span> ${s.mister}</p>
+            <p class="text-[10px] text-yellow-400 font-semibold z-10 w-full truncate"><i class="fa-solid fa-futbol text-[9px] mr-1"></i>${s.bomber}</p>
+          </div>
+        `;
+      });
+    }
+
+    // -------------------------------------------------------------
+    // MOMENTI LEGGENDARI
+    // -------------------------------------------------------------
+    const datiStorici = [
+      { anno: "1908", titolo: "La Fondazione: Fratelli del Mondo", categoria: "Origini", dettagli: "9 marzo 1908: presso il Ristorante Orologio di Milano viene fondato il Football Club Internazionale da 44 soci dissidenti del Milan.", link: "https://it.wikipedia.org/wiki/Storia_del_Football_Club_Internazionale_Milano" },
+      { anno: "1964 - 1965", titolo: "La Grande Inter di Helenio Herrera", categoria: "Era Herrera", dettagli: "Due Coppe dei Campioni e due Coppe Intercontinentali consecutive guidate dal 'Mago', con campioni come Mazzola, Facchetti, Picchi e Suarez.", link: "https://it.wikipedia.org/wiki/Grande_Inter" },
+      { anno: "1998", titolo: "La Coppa UEFA a Parigi", categoria: "Europa", dettagli: "Trionfo 3-0 contro la Lazio al Parco dei Principi con i gol di Zamorano, Zanetti e la finta celebre di Ronaldo il Fenomeno.", link: "https://it.wikipedia.org/wiki/Finale_della_Coppa_UEFA_1997-1998" },
+      { anno: "2010", titolo: "Il Triplete Leggendario", categoria: "Trionfo", dettagli: "Scudetto, Coppa Italia e Champions League conquistata a Madrid contro il Bayern Monaco con la doppietta memorabile di Diego Milito.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2009-2010" },
+      { anno: "2024", titolo: "La Seconda Stella", categoria: "Scudetto", dettagli: "Il ventesimo scudetto nerazzurro conquistato aritmeticamente nel derby di Milano del 22 aprile 2024.", link: "https://it.wikipedia.org/wiki/Football_Club_Internazionale_Milano_2023-2024" }
+    ];
+
+    function renderHistory(items) {
+      const container = document.getElementById('history-container');
+      const noResults = document.getElementById('no-results');
+      if (!container) return;
+      container.innerHTML = '';
+      if (items.length === 0) { 
+        if (noResults) noResults.classList.remove('hidden'); 
+        return; 
+      }
+      if (noResults) noResults.classList.add('hidden');
+      items.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-inter-card border border-blue-900/40 rounded-xl p-5 hover:border-yellow-500/50 transition flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-baseline mb-2">
+                <span class="text-xs font-bold text-yellow-500 tracking-wider">${item.anno}</span>
+                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${item.categoria}</span>
+              </div>
+              <h3 class="text-lg font-bold text-white mb-2">${item.titolo}</h3>
+              <p class="text-sm text-slate-400 leading-relaxed">${item.dettagli}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/60">
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-yellow-400 text-xs font-semibold inline-flex items-center">
+                Approfondisci su Wikipedia <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filtraStoria() {
+      const q = document.getElementById('historySearch').value.toLowerCase();
+      renderHistory(datiStorici.filter(i => Object.values(i).join(' ').toLowerCase().includes(q)));
+    }
+
+    // Avvio sequenza
     renderScudetti();
     renderPartite();
     renderHistory(datiStorici);
@@ -912,7 +1029,6 @@
   </script>
 </body>
 </html>
-
 
 
 
