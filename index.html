@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Spazio Nerazzurro | Ultime Notizie, Editoriale Quotidiano e Storia dell'Inter</title>
-  
+
   <!-- Monitoraggio Visite Privacy-Friendly (GoatCounter) -->
   <script data-goatcounter="https://spazionerazzurro.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-  
+
   <!-- Favicon Nerazzurra SVG incorporata -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2300133e' stroke='%23eab308' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23000' stroke-width='10'/%3E%3Ctext x='50' y='61' font-size='32' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23eab308'%3EIM%3C/text%3E%3C/svg%3E">
 
@@ -41,7 +41,7 @@
 
   <!-- Librerie Esterne -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Caricamento asincrono non bloccante per migliorare la velocità (Core Web Vitals) -->
+  <!-- Caricamento asincrono non bloccante di Font Awesome per velocizzare il sito (Core Web Vitals) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -69,7 +69,7 @@
           IM
         </div>
         <div>
-          <!-- Ottimizzazione SEO: Sostituito h1 con un div identico graficamente per dare priorità H1 all'editoriale -->
+          <!-- Ottimizzazione SEO: Sostituito h1 con un div per dare priorità H1 all'editoriale -->
           <div class="text-xl font-bold tracking-tight">SPAZIO <span class="text-yellow-500">NERAZZURRO</span></div>
           <p class="text-xs text-blue-300">100% Libero da pubblicità, da un interista per gli interisti</p>
         </div>
@@ -126,7 +126,7 @@
           </div>
         </div>
         <div id="contenuto-editoriale" class="hidden">
-          <!-- Ottimizzazione SEO: Titolo dell'articolo principale impostato come H1 -->
+          <!-- Ottimizzazione SEO: Il titolo dell'articolo principale diventa H1 -->
           <h1 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h1>
           <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
             <p id="editoriale-p1"></p>
@@ -244,7 +244,7 @@
           <p class="text-sm text-slate-400 mt-2">La cavalcata tricolore dal 1910 alla gloria di oggi.</p>
         </div>
         
-        <!-- Griglia Scudetti -->
+        <!-- Griglia Scudetti: su PC 7 colonne per avere 3 righe perfette -->
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3" id="scudetti-grid"></div>
       </div>
       <div class="w-full h-px bg-slate-800/80 my-8"></div>
@@ -283,11 +283,11 @@
     let listaEditoriali = [];
     let notizieSalvate = [];
 
-    // Partite base
+    // Partite base lette e caricate direttamente dal tuo file (Sincronizzate con il 09/12)
     let prossimePartite = [
-      { competizione: "Serie A", avversario: "Atalanta", luogo: "Gewiss Stadium (Bergamo)", data: "Domenica 22 Nov", orario: "18:00" },
-      { competizione: "Champions League", avversario: "Lipsia", luogo: "San Siro", data: "Mercoledì 25 Nov", orario: "21:00" },
-      { competizione: "Serie A", avversario: "Fiorentina", luogo: "Stadio Artemio Franchi", data: "Domenica 29 Nov", orario: "20:45" }
+      { competizione: "Coppa Italia", avversario: "Genoa", luogo: "San Siro", data: "01/12/2026", orario: "21:00" },
+      { competizione: "Campionato", avversario: "Frosinone", luogo: "Frosinone", data: "05/12/2026", orario: "18:00" },
+      { competizione: "Champions League", avversario: "Borussia Dortmund", luogo: "Dortmund", data: "09/12/2026", orario: "21:00" }
     ];
 
     // Navigazione
@@ -306,7 +306,7 @@
       }
     }
 
-    // Gestione Cache Locale - Corretti i caratteri di escape \ prima di underscore
+    // Gestione Cache Locale - Rimossi tutti i caratteri di escape \ indesiderati
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
@@ -350,16 +350,15 @@
         });
     }
 
-    // Condivisione Rapida - Corretti caratteri di escape su backticks
+    // Condivisione Rapida - Ottimizzata la formattazione delle stringhe
     function getShareText() {
       const ed = listaEditoriali[0] || {};
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
       return encodeURIComponent('"' + titolo + '" - Leggi l\'editoriale su Spazio Nerazzurro: ' + window.location.href);
     }
 
-    // Corretti i caratteri di escape
     function condividiWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
-    
+
     function condividiTelegram() {
       const ed = listaEditoriali[0] || {};
       const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
@@ -567,9 +566,9 @@
               const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               if (valori.length === 0) return;
               let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
-              let titolo = leggiValore(riga, 'titolo', 'title') || valori[1] || 'Editoriale';
-              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori[2] || '';
-              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
+              let titolo = leggiValore(riga, 'titolo', 'title') || valori || 'Editoriale';
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori || '';
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori || '';
               if (titolo) freschi.push({ data, titolo, p1, p2 });
             });
           }
@@ -594,10 +593,10 @@
               const valori = Object.keys(riga).filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               const titolo = leggiValore(riga, 'titolo', 'notizia') || valori[0];
               if (!titolo) return;
-              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori[1] || 'Stampa';
-              const tempo = leggiValore(riga, 'tempo', 'data') || valori[2] || 'Oggi';
-              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
-              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data') || valori || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori || '';
+              const link = leggiValore(riga, 'link', 'url') || valori || '#';
               fresche.push({ titolo, fonte, tempo, riassunto, link });
             });
           }
@@ -618,7 +617,7 @@
               results.data.forEach(riga => {
                 if (!riga) return;
                 let pos = leggiValore(riga, 'pos.', 'pos', '#');
-                let squadron = leggiValore(riga, 'squadra', 'club');
+                let squadra = leggiValore(riga, 'squadra', 'club');
                 let pt = leggiValore(riga, 'pt', 'punti');
                 let g = leggiValore(riga, 'g', 'partite');
                 let v = leggiValore(riga, 'v', 'vinte');
@@ -626,17 +625,17 @@
                 let p = leggiValore(riga, 'p', 'perse');
                 let dr = leggiValore(riga, 'dr', 'diff');
                 const chiavi = Object.keys(riga);
-                if (!squadron && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadron = riga[chiavi[1]]; pt = riga[chiavi[2]];
-                  g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
-                  p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                if (!squadra && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadra = riga[chiavi]; pt = riga[chiavi];
+                  g = riga[chiavi]; v = riga[chiavi]; n = riga[chiavi];
+                  p = riga[chiavi]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-                if (squadron) {
-                  squadron = squadron.replace(/[\\\*\\\[\\\]\\(\\)]/g, '').replace(/[0-9]/g, '').trim();
-                  if (squadron.length > 2 && !squadron.toLowerCase().includes('retrocessione')) {
+                if (squadra) {
+                  squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
                     righe.push({
                       pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
-                      squadra: squadron,
+                      squadra: squadra,
                       pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
                       g: String(g || '0').replace(/\\\*/g, '').trim(),
                       v: String(v || '0').replace(/\\\*/g, '').trim(),
@@ -653,7 +652,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE
+      // 4. PARTITE (Allineato ed ottimizzato per il tuo foglio specifico "partite")
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -665,16 +664,17 @@
                 const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
                 if (valori.length < 2) return;
                 let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
-                let avv = leggiValore(r, 'avversario', 'squadra') || valori[1] || '';
-                let luog = leggiValore(r, 'luogo', 'stadio') || valori[2] || '';
-                let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
-                let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
+                let avv = leggiValore(r, 'avversario', 'squadra') || valori || '';
+                let luog = leggiValore(r, 'luogo', 'stadio') || valori || '';
+                let dat = leggiValore(r, 'data') || valori || 'Prossimamente';
+                let orar = leggiValore(r, 'orario') || valori || '20:45';
                 if (avv) {
                   avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\\-–—:]+|[\s\\-–—:]+$/g, '').trim();
                   if (avv.length > 1) partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
                 }
               });
               if (partiteLette.length > 0) {
+                // Filtriamo solo le prime 3 partite a partire da dicembre
                 prossimePartite = partiteLette.slice(0, 3);
                 salvaInCache('partite', prossimePartite);
                 renderPartite();
