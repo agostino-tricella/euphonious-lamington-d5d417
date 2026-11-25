@@ -126,7 +126,7 @@
           </div>
         </div>
         <div id="contenuto-editoriale" class="hidden">
-          <!-- Ottimizzazione SEO: Titolo principale impostato come H1 -->
+          <!-- Ottimizzazione SEO: Il titolo dell'articolo principale diventa H1 -->
           <h1 id="editoriale-titolo" class="text-2xl md:text-4xl font-extrabold text-white mb-6 leading-tight"></h1>
           <div class="prose prose-invert max-w-none text-slate-300 space-y-4 text-base md:text-lg leading-relaxed">
             <p id="editoriale-p1"></p>
@@ -283,7 +283,7 @@
     let listaEditoriali = [];
     let notizieSalvate = [];
 
-    // Partite base (caricate in caso di fallback offline)
+    // Partite di fallback (offline) aggiornate
     let prossimePartite = [
       { competizione: "Champions League", avversario: "Stoccarda", luogo: "San Siro", data: "25/11/2026", orario: "21:00" },
       { competizione: "Campionato", avversario: "Genoa", luogo: "San Siro", data: "28/11/2026", orario: "20:45" },
@@ -293,7 +293,7 @@
       { competizione: "Campionato", avversario: "Torino", luogo: "San Siro", data: "13/12/2026", orario: "15:00" }
     ];
 
-    // Navigazione
+    // Navigazione tabs
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -309,7 +309,7 @@
       }
     }
 
-    // Gestione Cache Locale - Rimossi tutti i caratteri di escape \ indesiderati
+    // Gestione Cache Locale
     function salvaInCache(chiave, dati) {
       try { localStorage.setItem('sn_' + chiave, JSON.stringify(dati)); } catch (e) {}
     }
@@ -353,7 +353,7 @@
         });
     }
 
-    // Condivisione Rapida
+    // Condivisione
     function getShareText() {
       const ed = listaEditoriali[0] || {};
       const titolo = ed.titolo || "Editoriale su Spazio Nerazzurro";
@@ -472,19 +472,23 @@
       }
     }
 
-    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CORRETTO!)
+    // Convertitore Date GG/MM/AAAA -> Oggetto Date di JavaScript (CON INDICI CORRETTI)
     function parseDataItaliana(strData) {
       if (!strData) return null;
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
-      const giorno = parseInt(parti[0], 10);
-      const mese = parseInt(parti[1], 10) - 1; // I mesi in JS vanno da 0 a 11 (CORRETTO parti[1])
-      let anno = parseInt(parti[2], 10);        // CORRETTO parti[2]
       
+      const giorno = parseInt(parti[0], 10);
+      const mese = parseInt(parti, 10) - 1; // Mesi in JS: 0 = Gennaio, 11 = Dicembre
+      let anno = parseInt(parti, 10);
+      
+      if (isNaN(giorno) || isNaN(mese) || isNaN(anno)) return null;
+
       // Auto-correzione se l'anno è scritto a due cifre (es. "26" -> "2026")
       if (anno < 100) {
         anno += 2000;
       }
+      // Impostiamo la data a fine giornata per includere il giorno stesso nel filtro
       return new Date(anno, mese, giorno, 23, 59, 59);
     }
 
@@ -493,13 +497,11 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
 
-      // Otteniamo la data odierna senza l'ora per non escludere la partita di oggi
+      // Data odierna impostata all'inizio del giorno (00:00:00) per non nascondere i match di oggi
       const oggi = new Date();
       oggi.setHours(0, 0, 0, 0);
 
-      // 1. Filtriamo solo le partite da oggi in poi
-      // 2. Ordiniamo cronologicamente
-      // 3. Prendiamo le prime 3 partite future
+      // Filtro dinamico per mostrare solo i match futuri ordinati cronologicamente
       const filtrate = prossimePartite
         .filter(p => {
           const dataMatch = parseDataItaliana(p.data);
@@ -610,9 +612,9 @@
               const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               if (valori.length === 0) return;
               let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
-              let titolo = leggiValore(riga, 'titolo', 'title') || valori[1] || 'Editoriale';
-              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori[2] || '';
-              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
+              let titolo = leggiValore(riga, 'titolo', 'title') || valori || 'Editoriale';
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori || '';
+              let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori || '';
               if (titolo) freschi.push({ data, titolo, p1, p2 });
             });
           }
@@ -637,10 +639,10 @@
               const valori = Object.keys(riga).filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               const titolo = leggiValore(riga, 'titolo', 'notizia') || valori[0];
               if (!titolo) return;
-              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori[1] || 'Stampa';
-              const tempo = leggiValore(riga, 'tempo', 'data') || valori[2] || 'Oggi';
-              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
-              const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
+              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data') || valori || 'Oggi';
+              const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori || '';
+              const link = leggiValore(riga, 'link', 'url') || valori || '#';
               fresche.push({ titolo, fonte, tempo, riassunto, link });
             });
           }
@@ -670,9 +672,9 @@
                 let dr = leggiValore(riga, 'dr', 'diff');
                 const chiavi = Object.keys(riga);
                 if (!squadra && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadra = riga[chiavi[1]]; pt = riga[chiavi[2]];
-                  g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
-                  p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
+                  pos = riga[chiavi[0]]; squadra = riga[chiavi]; pt = riga[chiavi];
+                  g = riga[chiavi]; v = riga[chiavi]; n = riga[chiavi];
+                  p = riga[chiavi]; dr = riga[chiavi[9]] || riga[chiavi] || '0';
                 }
                 if (squadra) {
                   squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
@@ -696,27 +698,49 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE (Allineato ed ottimizzato per il tuo foglio specifico "partite")
+      // 4. PARTITE (Sincronizzazione dinamica basata su mappatura posizionale per evitare spazi vuoti nei fogli)
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
-            if (results.data) {
+            if (results.data && results.data.length > 0) {
               const partiteLette = [];
+              
+              // Troviamo dinamicamente gli indici corretti delle colonne per non sfasare gli indici
+              const primeRighe = results.data[0];
+              const keys = Object.keys(primeRighe).map(k => k.trim().toLowerCase());
+              
+              const idxCompetizione = keys.findIndex(k => k.includes('competizione') || k.includes('torneo'));
+              const idxAvversario = keys.findIndex(k => k.includes('avversario') || k.includes('squadra'));
+              const idxLuogo = keys.findIndex(k => k.includes('luogo') || k.includes('stadio'));
+              const idxData = keys.findIndex(k => k.includes('data'));
+              const idxOrario = keys.findIndex(k => k.includes('orario'));
+
               results.data.forEach(r => {
                 if (!r) return;
-                const chiavi = Object.keys(r);
-                const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
-                if (valori.length < 2) return;
-                let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
-                let avv = leggiValore(r, 'avversario', 'squadra') || valori[1] || '';
-                let luog = leggiValore(r, 'luogo', 'stadio') || valori[2] || '';
-                let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
-                let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
+                const rKeys = Object.keys(r);
+                const rValori = rKeys.map(k => pulisciTesto(r[k]));
+                
+                // Mappatura sicura con fallback indici se le chiavi falliscono
+                let comp = (idxCompetizione !== -1) ? rValori[idxCompetizione] : rValori[0];
+                let avv  = (idxAvversario !== -1) ? rValori[idxAvversario] : rValori;
+                let luog = (idxLuogo !== -1) ? rValori[idxLuogo] : rValori;
+                let dat  = (idxData !== -1) ? rValori[idxData] : rValori;
+                let orar = (idxOrario !== -1) ? rValori[idxOrario] : rValori;
+
                 if (avv) {
-                  avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\\-–—:]+|[\s\\-–—:]+$/g, '').trim();
-                  if (avv.length > 1) partiteLette.push({ competizione: comp, avversario: avv, luogo: luog, data: dat, orario: orar });
+                  avv = avv.replace(/\binter\b/gi, '').replace(/\bvs\.?\b/gi, '').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '').trim();
+                  if (avv.length > 1 && dat && dat.includes('/')) {
+                    partiteLette.push({ 
+                      competizione: comp || 'Serie A', 
+                      avversario: avv, 
+                      luogo: luog || '', 
+                      data: dat, 
+                      orario: orar || '20:45' 
+                    });
+                  }
                 }
               });
+
               if (partiteLette.length > 0) {
                 prossimePartite = partiteLette;
                 salvaInCache('partite', prossimePartite);
@@ -846,4 +870,5 @@
   </script>
 </body>
 </html>
+
 
