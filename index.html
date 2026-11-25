@@ -360,9 +360,9 @@
       return encodeURIComponent('"' + titolo + '" - Leggi l\'editoriale su Spazio Nerazzurro: ' + window.location.href);
     }
 
-    function condividiWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
+    function condiviWhatsApp() { window.open('https://api.whatsapp.com/send?text=' + getShareText(), '_blank'); }
 
-    function condividiTelegram() {
+    function condiviTelegram() {
       const ed = listaEditoriali[0] || {};
       const titolo = encodeURIComponent(ed.titolo || "Spazio Nerazzurro");
       const url = encodeURIComponent(window.location.href);
@@ -478,9 +478,14 @@
       const parti = strData.split('/');
       if (parti.length !== 3) return null;
       const giorno = parseInt(parti[0], 10);
-      const mese = parseInt(parti, 10) - 1; // I mesi in JS vanno da 0 a 11
-      const anno = parseInt(parti, 10);
-      return new Date(anno, mese, giorno, 23, 59, 59); // Impostiamo a fine giornata
+      const mese = parseInt(parti[1], 10) - 1; // I mesi in JS vanno da 0 a 11
+      let anno = parseInt(parti[2], 10);
+      
+      // Auto-correzione se l'anno è scritto a due cifre (es. "26" -> "2026")
+      if (anno < 100) {
+        anno += 2000;
+      }
+      return new Date(anno, mese, giorno, 23, 59, 59);
     }
 
     function renderPartite() {
@@ -488,13 +493,13 @@
       if (!partiteContainer) return;
       partiteContainer.innerHTML = '';
 
-      // Otteniamo la data odierna senza l'ora per evitare di filtrare via i match che si giocano oggi
+      // Otteniamo la data odierna senza l'ora per non escludere la partita di oggi
       const oggi = new Date();
       oggi.setHours(0, 0, 0, 0);
 
       // 1. Filtriamo solo le partite da oggi in poi
       // 2. Ordiniamo cronologicamente
-      // 3. Prendiamo al massimo le prime 3
+      // 3. Prendiamo le prime 3 partite future
       const filtrate = prossimePartite
         .filter(p => {
           const dataMatch = parseDataItaliana(p.data);
@@ -605,8 +610,8 @@
               const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               if (valori.length === 0) return;
               let data = leggiValore(riga, 'data', 'giorno', 'date') || valori[0] || 'Oggi';
-              let titolo = leggiValore(riga, 'titolo', 'title') || valori || 'Editoriale';
-              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori || '';
+              let titolo = leggiValore(riga, 'titolo', 'title') || valori[1] || 'Editoriale';
+              let p1 = leggiValore(riga, 'paragrafo1', 'paragrafo 1', 'testo') || valori[2] || '';
               let p2 = leggiValore(riga, 'paragrafo2', 'paragrafo 2') || valori[3] || '';
               if (titolo) freschi.push({ data, titolo, p1, p2 });
             });
@@ -632,8 +637,8 @@
               const valori = Object.keys(riga).filter(k => k !== '__parsed_extra').map(k => pulisciTesto(riga[k])).filter(v => v !== '');
               const titolo = leggiValore(riga, 'titolo', 'notizia') || valori[0];
               if (!titolo) return;
-              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori || 'Stampa';
-              const tempo = leggiValore(riga, 'tempo', 'data') || valori || 'Oggi';
+              const fonte = leggiValore(riga, 'fonte', 'giornale') || valori[1] || 'Stampa';
+              const tempo = leggiValore(riga, 'tempo', 'data') || valori[2] || 'Oggi';
               const riassunto = leggiValore(riga, 'riassunto', 'descrizione') || valori[3] || '';
               const link = leggiValore(riga, 'link', 'url') || valori[4] || '#';
               fresche.push({ titolo, fonte, tempo, riassunto, link });
@@ -656,7 +661,7 @@
               results.data.forEach(riga => {
                 if (!riga) return;
                 let pos = leggiValore(riga, 'pos.', 'pos', '#');
-                let squadra = leggiValore(riga, 'squadra', 'club');
+                let squadron = leggiValore(riga, 'squadra', 'club');
                 let pt = leggiValore(riga, 'pt', 'punti');
                 let g = leggiValore(riga, 'g', 'partite');
                 let v = leggiValore(riga, 'v', 'vinte');
@@ -664,17 +669,17 @@
                 let p = leggiValore(riga, 'p', 'perse');
                 let dr = leggiValore(riga, 'dr', 'diff');
                 const chiavi = Object.keys(riga);
-                if (!squadra && chiavi.length >= 8) {
-                  pos = riga[chiavi[0]]; squadra = riga[chiavi]; pt = riga[chiavi];
+                if (!squadron && chiavi.length >= 8) {
+                  pos = riga[chiavi[0]]; squadron = riga[chiavi[1]]; pt = riga[chiavi[2]];
                   g = riga[chiavi[3]]; v = riga[chiavi[4]]; n = riga[chiavi[5]];
                   p = riga[chiavi[6]]; dr = riga[chiavi[9]] || riga[chiavi[7]] || '0';
                 }
-                if (squadra) {
-                  squadra = squadra.replace(/[\\\*\[\]\(\)]/g, '').replace(/[0-9]/g, '').trim();
-                  if (squadra.length > 2 && !squadra.toLowerCase().includes('retrocessione')) {
+                if (squadron) {
+                  squadron = squadron.replace(/[\\\*\\\[\\\]\\(\\)]/g, '').replace(/[0-9]/g, '').trim();
+                  if (squadron.length > 2 && !squadron.toLowerCase().includes('retrocessione')) {
                     righe.push({
                       pos: parseInt(String(pos).replace(/[\\\*\\.]/g, '')) || (righe.length + 1),
-                      squadra: squadra,
+                      squadra: squadron,
                       pt: String(pt || '0').replace(/[\\\*\\.]/g, '').trim(),
                       g: String(g || '0').replace(/\\\*/g, '').trim(),
                       v: String(v || '0').replace(/\\\*/g, '').trim(),
@@ -691,7 +696,7 @@
         }).catch(e => {});
       }
 
-      // 4. PARTITE - Sincronizzazione dinamica corretta per date italiane
+      // 4. PARTITE
       if (urlPartite && urlPartite.startsWith('http')) {
         fetchSicuro(urlPartite).then(csvText => {
           Papa.parse(csvText, { header: true, skipEmptyLines: 'greedy', complete: function(results) {
@@ -703,8 +708,8 @@
                 const valori = chiavi.filter(k => k !== '__parsed_extra').map(k => pulisciTesto(r[k])).filter(v => v !== '');
                 if (valori.length < 2) return;
                 let comp = leggiValore(r, 'competizione', 'torneo') || valori[0] || 'Serie A';
-                let avv = leggiValore(r, 'avversario', 'squadra') || valori || '';
-                let luog = leggiValore(r, 'luogo', 'stadio') || valori || '';
+                let avv = leggiValore(r, 'avversario', 'squadra') || valori[1] || '';
+                let luog = leggiValore(r, 'luogo', 'stadio') || valori[2] || '';
                 let dat = leggiValore(r, 'data') || valori[3] || 'Prossimamente';
                 let orar = leggiValore(r, 'orario') || valori[4] || '20:45';
                 if (avv) {
@@ -841,4 +846,3 @@
   </script>
 </body>
 </html>
-
